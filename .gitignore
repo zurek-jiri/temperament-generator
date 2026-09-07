@@ -1,0 +1,27 @@
+/Builds/
+/build/
+/Preview/
+/.vs/
+*.user
+/Temperament Generator.exe
+/Temperament Generator 1.1.exe
+/Temperament Generator 1.2.exe
+/Temperament Generator 1.2.1.exe
+/Temperament Generator 1.3.exe
+/Temperament Generator 1.3.1.exe
+/Temperament Generator 1.4.exe
+/Temperament Generator 1.4.1.exe
+
+# Local work, conversations, and release artifacts are not project source.
+/codex_session.txt
+/.codex/
+/.agents/
+/.env
+/.env.*
+/dist/
+/_site/
+__pycache__/
+*.pyc
+/Temperament Generator*.exe
+/Source/TunFor.png
+/.local-tools/

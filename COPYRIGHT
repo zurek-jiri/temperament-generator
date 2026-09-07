@@ -1,0 +1,19 @@
+Temperament Generator
+Copyright (C) 2026 zurek-jiri and contributors.
+
+The project's original application code, build scripts, documentation, website,
+and original artwork are licensed under the GNU Affero General Public License,
+version 3 only (SPDX: AGPL-3.0-only). See LICENSE for the complete terms.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License, version 3, as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for details.
+
+Third-party components retain their original copyrights and licenses.
+See THIRD_PARTY_NOTICES.md and Licenses/ThirdPartyNotices.txt.
+
+Project and contact: https://github.com/zurek-jiri/temperament-generator

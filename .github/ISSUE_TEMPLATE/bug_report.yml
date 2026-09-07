@@ -1,0 +1,30 @@
+name: Bug report
+description: Report an incorrect calculation or a problem using the application.
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Application version
+      placeholder: e.g. 1.4.1
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Operating system and display scaling
+      placeholder: e.g. Windows 11, 150% display scaling
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps and input values
+      description: Include a CSV row or comma expressions when relevant. Remove personal information.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true

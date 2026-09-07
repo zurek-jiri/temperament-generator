@@ -1,0 +1,21 @@
+Maintained by zurek-jiri
+Copyright (C) 2026 zurek-jiri and contributors.
+
+Free and open-source software, licensed under the GNU Affero General Public
+License, version 3 (AGPLv3). You may use, modify and redistribute this program
+under that license, including for commercial purposes.
+
+This program comes WITHOUT ANY WARRANTY, including any implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Choose "AGPLv3 license" above to read the complete license offline. Choose
+"Third-party notices" for JUCE and the included libraries' acknowledgements.
+
+Source, build instructions and issue reports:
+https://github.com/zurek-jiri/temperament-generator
+
+The corresponding source for release downloads is provided beside the binaries
+on the project's Releases page, including the JUCE source used for the build.
+
+Made with JUCE 8.0.12, used under its AGPLv3 license.
+This software is based in part on the work of the Independent JPEG Group.
