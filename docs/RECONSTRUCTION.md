@@ -97,16 +97,36 @@ CSV as a configure dependency. The executable does not read an external CSV.
 Names, note deviations and supplied comments are preserved. Recognition checks
 all twelve rotations of each entry after normalising both charts to A.
 
-A match must be within 1 cent at every note. The UI reports the maximum
+A close match must be within 1 cent at every note. The UI reports the maximum
 difference, the rotation in fifths and alternatives, including aliases. Up to 0.001 cents
-is labelled a catalogue match; larger qualifying differences are labelled near.
+is labelled Match; larger differences up to 1 cent are labelled Near.
 Suggestions are independent of expression reconstruction and never replace the
 user's tuning or claim that similar data uniquely identifies its author.
 The wider near-match tolerance accommodates accumulated nearest-fraction error:
 Trost's one-decimal catalogue CSV can differ by 0.53 cents after Auto closure.
-The All matches window lists every qualifying name and distinct rotation, ordered
+The Suggestions window first lists every close name and distinct rotation, ordered
 by maximum note difference and then RMS difference. Identical rotated charts of
 the same entry are deduplicated; different catalogue names are retained.
+
+Beyond this limit, alternatives are ranked by the harmonic distance
+`sqrt(0.5 * fifthRms^2 + 0.25 * majorThirdRms^2 + 0.25 * minorThirdRms^2)`.
+Each RMS compares all twelve intervals of its family in cents between the
+input and the rotated catalogue entry. This preserves absolute interval sizes,
+is independent of a common pitch offset, and gives fifths twice the weight of
+each third family. It is a transparent comparison heuristic, not a probability
+of historical identity or a perceptual hearing threshold.
+
+Add the best rotation of each remaining catalogue name until at least five
+distinct names are represented. No distance cutoff hides these alternatives;
+they are labelled Compare and may be distant. Their note maximum/RMS and three
+interval RMS differences remain visible. All close names/rotations survive even
+when they already exceed five entries. Ties use note maximum error, catalogue
+order, then rotation order. Nonfinite input or invalid tolerances yield no results.
+
+The supplied Rousseau variant suggests Ordinaire in every rotation: its fifth
+RMS difference is about 1.869 cents and harmonic distance about 2.700 cents,
+although the maximum A-relative note difference in the original position is
+6.350 cents. Other close harmonic alternatives include Schlick and rotated Rameau.
 
 ## Shared editing state and rotation
 
