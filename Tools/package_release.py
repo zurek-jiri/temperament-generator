@@ -55,7 +55,7 @@ def main():
         platform_name = "macos-" + ("arm64" if arch == "arm64" else "x64")
         binary = artefacts / "Temperament Generator.app"
         executable = binary / "Contents/MacOS/Temperament Generator"
-        subprocess.run(["lipo", "-verify_arch", arch, str(executable)], check=True)
+        subprocess.run(["lipo", str(executable), "-verify_arch", arch], check=True)
         subprocess.run(["codesign", "--force", "--deep", "--sign", "-", str(binary)], check=True)
         subprocess.run(["codesign", "--verify", "--deep", "--strict", str(binary)], check=True)
     elif sys.platform.startswith("linux"):
