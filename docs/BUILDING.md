@@ -23,8 +23,21 @@ The portable CMake commands above do not depend on that shortcut.
 
 ## Linux: Ubuntu 24.04
 
-The Linux build workflow is prepared; a Linux release is not yet verified on
-the maintainer's machine. Windows testing is not proof of Linux compatibility.
+The Linux release is built on Ubuntu 24.04 x64. The workflow runs native
+mathematical tests and GUI rendering checks under Xvfb.
+
+To run the downloaded binary on Ubuntu 24.04, extract the `.tar.gz` archive
+(which preserves executable permissions), install the runtime libraries if
+needed, and launch from the extracted folder:
+
+```sh
+sudo apt install libfreetype6 libfontconfig1 libx11-6 libxcomposite1 libxcursor1 \
+  libxext6 libxinerama1 libxrandr2 libxrender1 libgl1 fonts-dejavu-core
+./'Temperament Generator'
+```
+
+The binary needs glibc 2.39 or later and an X11 display (or XWayland). It is not
+an AppImage; older distributions should compile from source instead.
 
 Install a compiler, CMake, Git and the development packages used by JUCE's GUI:
 
@@ -49,12 +62,38 @@ For a machine without a display, run the GUI checks under Xvfb:
 xvfb-run -a './Builds/linux/TemperamentGenerator_artefacts/Release/Temperament Generator' --render-preview Preview
 ```
 
-Before calling Linux supported, inspect the screenshots and test typing, menus,
-clipboard, window scaling and scrolling on a real desktop. The initial JUCE 8
-Linux target uses X11; Wayland desktops may run it through XWayland. Test the
-chosen desktop environment rather than promising universal Linux support.
-The compiled binary needs the corresponding system libraries; an AppImage or
-distribution package can make installation easier after the basic build passes.
+For desktop validation, also test typing, menus, clipboard, window scaling and
+scrolling in your chosen environment. Offscreen checks do not cover every desktop.
+
+## macOS: Apple Silicon and Intel
+
+Install Xcode's command line tools (`xcode-select --install`), CMake and Git.
+The release workflow builds separately on native Apple Silicon and Intel
+runners, with macOS 13 as the deployment target:
+
+```sh
+cmake -S . -B Builds/mac -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
+cmake --build Builds/mac --parallel 2
+ctest --test-dir Builds/mac --output-on-failure
+open 'Builds/mac/TemperamentGenerator_artefacts/Release/Temperament Generator.app'
+```
+
+For GUI smoke checks, run the executable inside the app bundle with
+`--render-preview Preview`. Release packaging verifies the architecture and
+applies an ad-hoc signature; these builds are not Apple-notarised. Source builds
+and downloads use system frameworks, with no separate JUCE runtime to install.
+
+## Release automation
+
+The **Prepare desktop release** workflow builds Windows x64, Linux x64 and
+both Mac architectures from the same commit. Each job runs tests, renders GUI
+checks, verifies its executable architecture, and uploads a native archive to
+a draft release. Windows also provides the complete corresponding source,
+including the JUCE checkout used by all four jobs.
+
+The final job downloads all five archives, verifies their SHA-256 hashes and
+uploads one `SHA256SUMS.txt`. The release stays a draft until reviewed and
+published. Ordinary **Build and test** checks also cover all four runners.
 
 ## Core-only build, without JUCE
 

@@ -20,6 +20,7 @@ public:
     juce::ComboBox& thirdsSensitivityControl() { return thirdsSensitivity; }
     juce::String displayedNoteName(int note) const { return spellings[static_cast<size_t>(note)]; }
     temperament::HarmonyColourLimits colourLimits() const { return limits; }
+    std::function<void()> onColoursChanged;
     void paint(juce::Graphics&) override;
     void resized() override;
     void mouseMove(const juce::MouseEvent&) override;

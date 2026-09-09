@@ -36,13 +36,14 @@ const std::array<std::string, 12>& noteNames()
     return names;
 }
 
-const std::array<SimpleFraction, 15>& simpleFractions()
+const std::array<SimpleFraction, 17>& simpleFractions()
 {
-    static const std::array<SimpleFraction, 15> choices {{
+    static const std::array<SimpleFraction, 17> choices {{
         { "0", 0 }, { "1", 1 }, { "1/2", 0.5 }, { "1/3", 1.0 / 3 },
         { "1/4", 0.25 }, { "1/5", 0.2 }, { "1/6", 1.0 / 6 }, { "1/12", 1.0 / 12 },
         { "-1", -1 }, { "-1/2", -0.5 }, { "-1/3", -1.0 / 3 },
-        { "-1/4", -0.25 }, { "-1/5", -0.2 }, { "-1/6", -1.0 / 6 }, { "-1/12", -1.0 / 12 }
+        { "-1/4", -0.25 }, { "-1/5", -0.2 }, { "-1/6", -1.0 / 6 }, { "-1/12", -1.0 / 12 },
+        { "1/24", 1.0 / 24 }, { "-1/24", -1.0 / 24 }
     }};
     return choices;
 }
@@ -64,7 +65,17 @@ size_t nearestSimpleFraction(double value)
     return best;
 }
 
-ReverseCalculation reverseCsv(const std::string& line, Mode mode)
+std::array<double, 12> rotateChartFifths(const std::array<double, 12>& chart, int steps)
+{
+    const int shift = ((steps % 12 + 12) % 12) * 7 % 12;
+    std::array<double, 12> rotated {};
+    const double reference = chart[(9 - shift + 12) % 12];
+    for (int i = 0; i < 12; ++i) rotated[i] = chart[(i - shift + 12) % 12] - reference;
+    rotated[9] = 0;
+    return rotated;
+}
+
+ReverseCalculation reverseCsv(const std::string& line, Mode mode, Reconstruction reconstruction)
 {
     ReverseCalculation result;
     size_t start = 0;
@@ -88,7 +99,7 @@ ReverseCalculation reverseCsv(const std::string& line, Mode mode)
     for (double& value : result.cents) value -= reference;
     result.cents[9] = 0;
     const auto& notes = cycles(Mode::pythagoreanFifths).front().notes;
-    const auto choices = expressionChoices(mode);
+    const auto choices = reconstructionChoices(mode);
     for (size_t i = 0; i < notes.size(); ++i)
     {
         const double deviation = result.cents[static_cast<size_t>(notes[(i + 1) % notes.size()])]
@@ -100,17 +111,12 @@ ReverseCalculation reverseCsv(const std::string& line, Mode mode)
                 || (std::abs(std::abs(choice.value - fraction) - std::abs(best->value - fraction)) <= 1e-12
                     && std::abs(choice.value) < std::abs(best->value) - 1e-12))
                 best = &choice;
-        result.expressions[i] = best->text;
+        const auto precise = reconstruction == Reconstruction::precise
+            ? preciseExpression(fraction * commaSize(mode), mode) : *best;
+        result.expressions[i] = precise.text;
         result.pythagoreanExpressions[i] = "0";
-        if (mode == Mode::syntonicFifths)
-        {
-            // P = S + H: e.g. -1/4-H/4 in S belongs as -1/4 in P.
-            const auto columns = pairedExpressions(best->value);
-            result.expressions[i] = columns.syntonic;
-            result.pythagoreanExpressions[i] = columns.pythagorean;
-        }
-        result.intervalErrors[i] = (best->value - fraction) * commaSize(mode);
-        result.closureError += pureInterval(mode) - 700.0 + best->value * commaSize(mode);
+        result.intervalErrors[i] = (precise.value - fraction) * commaSize(mode);
+        result.closureError += pureInterval(mode) - 700.0 + precise.value * commaSize(mode);
     }
     result.valid = true;
     return result;

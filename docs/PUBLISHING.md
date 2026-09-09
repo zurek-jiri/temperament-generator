@@ -47,7 +47,7 @@ every commit.
 4. Commit the reviewed source, then package the release:
 
    ```sh
-   python Tools/package_release.py --build-dir Builds/VS2026 --juce-path /path/to/JUCE
+   python Tools/package_release.py --build-dir Builds/VS2026 --juce-path /path/to/JUCE --include-source
    ```
 
 5. Tag the commit `vX.Y.Z`. Create a draft release, attach both archives and
@@ -81,3 +81,16 @@ Record modifications in the changelog and commit history. Downstream users may
 redistribute and modify the application, including commercially, under the
 license's source-sharing conditions. They do not need to buy a JUCE subscription
 to use this AGPL build.
+
+## Cross-platform releases from 1.5.5
+
+Use **Prepare desktop release** on the reviewed main commit. It creates a draft,
+builds and tests Windows x64, Linux x64, Apple Silicon Mac and Intel Mac, and
+uploads the native archives, complete corresponding source and combined SHA-256
+checksums. All jobs use standard runners on this public repository; they use
+release assets instead of Actions artifact storage or caches.
+
+Review all jobs and the five verified archives before publishing the draft as
+the latest release. Keep older releases and tags intact. Dispatch **Project
+website** after publication. A rerun may replace assets only on a draft for the
+exact same source commit; the helper refuses to modify published releases.

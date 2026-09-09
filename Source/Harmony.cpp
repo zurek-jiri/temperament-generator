@@ -8,6 +8,18 @@
 
 namespace temperament
 {
+const std::array<CircleConnection,36>& fifthCircleConnections()
+{
+    static const auto connections = [] {
+        std::array<CircleConnection,36> result {};
+        int n = 0;
+        for (auto kind : { HarmonyInterval::majorThird, HarmonyInterval::minorThird, HarmonyInterval::fifth })
+            for (int i = 0; i < 12; ++i)
+                result[static_cast<size_t>(n++)] = { i, (i + (kind == HarmonyInterval::fifth ? 1 : kind == HarmonyInterval::majorThird ? 4 : 9)) % 12, kind };
+        return result;
+    }();
+    return connections;
+}
 int harmonySteps(HarmonyInterval kind)
 {
     return kind == HarmonyInterval::fifth ? 7 : kind == HarmonyInterval::majorThird ? 4 : 3;

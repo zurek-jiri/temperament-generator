@@ -14,12 +14,13 @@ public:
         viewport.setScrollBarThickness(24);
         viewport.setScrollBarsShown(true, true);
         addAndMakeVisible(viewport);
-        setSize(1504, 1104);
+        setSize(1480, 900);
     }
     void paint(juce::Graphics& g) override { g.fillAll(juce::Colour(0xff10171f)); }
     void resized() override
     {
         viewport.setBounds(getLocalBounds());
+        content.setSize(juce::jmax(1280,getWidth()),juce::jmax(660,getHeight()));
     }
 private:
     MainComponent content;
@@ -74,10 +75,10 @@ private:
             setIcon(appIcon());
             setContentOwned(new ReadableContent(), true);
             setResizable(true, true);
-            setResizeLimits(960, 720, 3840, 2160);
+            setResizeLimits(1000, 650, 3840, 2160);
             const auto* display = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
             const auto available = display != nullptr ? display->userArea : juce::Rectangle<int>(0, 0, 1400, 1000);
-            centreWithSize(juce::jmin(1504, available.getWidth() - 40), juce::jmin(1136, available.getHeight() - 60));
+            centreWithSize(juce::jmin(1480, available.getWidth() - 16), juce::jmin(930, available.getHeight() - 16));
             setVisible(visible);
         }
         void closeButtonPressed() override { juce::JUCEApplication::getInstance()->systemRequestedQuit(); }

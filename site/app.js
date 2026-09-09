@@ -1,9 +1,9 @@
 "use strict";
 const config = window.temperamentSite || {};
 const views = {
-  fifths: { file: "fifths.png", height: 1080, alt: "Pythagorean circle of fifths with editable comma fractions and a twelve-note cents chart.", caption: "Set each fifth in comma fractions and calculate a chart relative to A." },
-  commas: { file: "commas.png", height: 1234, alt: "Syntonic fifths with syntonic and Pythagorean contributions in separate columns, including schisma expressions.", caption: "Write expressions and keep syntonic and Pythagorean contributions side by side." },
-  harmony: { file: "harmony.png", height: 1234, alt: "Harmony lattice with thick coloured fifth and third connections and a selected A-major chord spelled A, C-sharp, E.", caption: "Inspect the intervals of a selected chord, with note names following its musical context." }
+  fifths: { file: "fifths.png", width: 1320, height: 680, alt: "Inputs around the circle with editable comma formulas, a cent-deviation bar chart and catalogue suggestions.", caption: "Set each fifth in comma fractions and calculate a chart relative to A." },
+  commas: { file: "commas.png", width: 1320, height: 680, alt: "Formula list with combined comma expressions, a coloured fifth circle and a cent-deviation bar chart.", caption: "Combine Pythagorean, syntonic and schisma expressions in wide formula fields." },
+  harmony: { file: "harmony.png", width: 1480, height: 900, alt: "Harmony lattice with thick coloured fifth and third connections and a selected A-major chord spelled A, C-sharp, E.", caption: "Inspect the intervals of a selected chord, with note names following its musical context." }
 };
 for (const button of document.querySelectorAll("[data-view]")) {
   button.addEventListener("click", () => {
@@ -13,11 +13,12 @@ for (const button of document.querySelectorAll("[data-view]")) {
     img.src = "assets/" + view.file;
     img.alt = view.alt;
     img.height = view.height;
+    img.width = view.width;
     for (const id of ["screenshot-link", "full-size"]) document.getElementById(id).href = img.src;
     document.getElementById("screenshot-caption").textContent = view.caption;
   });
 }
-for (const el of document.querySelectorAll("[data-version]")) el.textContent = config.version || "1.4.2";
+for (const el of document.querySelectorAll("[data-version]")) el.textContent = config.version || "1.5.5";
 const validRepository = typeof config.repository === "string" && /^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9_.-]+$/.test(config.repository);
 const repo = validRepository ? "https://github.com/" + config.repository : "";
 for (const el of document.querySelectorAll("[data-repo-path]")) {

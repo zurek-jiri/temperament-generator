@@ -137,7 +137,8 @@ int main()
             check(std::abs(raw - recovered) <= std::abs(raw - choice.value) + 1e-12,
                   "Each reversed interval uses the nearest menu fraction");
     }
-    check(simpleFractions()[nearestSimpleFraction(1.0/24)].value == 0, "Stable midpoint tie chooses smaller magnitude");
+    check(simpleFractions()[nearestSimpleFraction(1.0/48)].value == 0, "Stable midpoint tie chooses smaller magnitude");
+    check(near(simpleFractions()[nearestSimpleFraction(1.0/24)].value,1.0/24), "One twenty-fourth is in the menu");
     check(reverseCsv("0,0;0;0;0;0;0;0;0;0;0;0;0\r\n").valid, "Accept decimal comma and trailing line ending");
     for (const auto* invalid : { "", "0;0", "0;0;0;0;0;0;0;0;0;0;0;0;", "0;0;0;0;0;0;0;0;0;0;0;0;0",
                                  "0;0;0;0;0;0;0;0;0;0;0;nan", "0;0;0;0;0;0;0;0;0;0;0;", "0;0;0;0;0;0;0;0;0;0;0;12001" })
@@ -174,8 +175,8 @@ int main()
         {
             check(near(recoveredFraction(equalReverse, i, mode), equalFraction(mode)), "ET CSV recovers exact fractional expressions");
             if (mode == Mode::syntonicFifths)
-                check(equalReverse.expressions[i] == "0" && equalReverse.pythagoreanExpressions[i] == "-1/12",
-                      "Paired ET import uses the Pythagorean column");
+                check(equalReverse.expressions[i] == "-P/12" && equalReverse.pythagoreanExpressions[i] == "0",
+                      "Unified ET import explicitly uses Pythagorean units");
         }
         for (const auto& choice : expressionChoices(mode))
             check(evaluateExpression(choice.text, mode, number, error) && near(number, choice.value), "All menu expressions parse consistently");
@@ -183,7 +184,7 @@ int main()
     std::string parseError;
     check(evaluateExpression("-1-schisma", Mode::syntonicFifths, number, parseError)
           && near(number * syntonicComma(), -pythagoreanComma()), "One syntonic comma plus schisma equals one Pythagorean comma");
-    check(fractionExpression(number, Mode::syntonicFifths) == "-1-H", "Closing wolf uses an exact schisma expression");
+    check(fractionExpression(number, Mode::syntonicFifths) == "-P", "Closing wolf uses an explicit Pythagorean expression");
     const auto quarter = pairedExpressions(evaluated("-1/4-H/4", Mode::syntonicFifths));
     check(quarter.syntonic == "0" && quarter.pythagorean == "-1/4", "Quarter S plus quarter schisma belongs in P");
     // Recover every signed menu fraction from a three-decimal chart in its native column.
@@ -196,11 +197,13 @@ int main()
             const auto chart = calculate(Mode::pythagoreanFifths, input);
             const auto reverse = reverseCsv(csv(chart.cents), Mode::syntonicFifths);
             check(chart.valid && reverse.valid, "Native comma fraction imports from rounded CSV");
-            check(reverse.expressions[0] == (unit == Mode::syntonicFifths ? fraction.text : "0"), "Syntonic fraction uses S column");
-            check(reverse.pythagoreanExpressions[0] == (unit == Mode::pythagoreanFifths ? fraction.text : "0"), "Pythagorean fraction uses P column");
+            check(fraction.value==0 || reverse.expressions[0].find_first_of("PS")!=std::string::npos || reverse.expressions[0].find("schisma")!=std::string::npos, "Unified fraction explicitly names a comma");
+            check(reverse.pythagoreanExpressions[0] == "0", "No hidden second contribution");
             check(std::abs(reverse.intervalErrors[0]) <= 0.0010001, "Column choice retains CSV precision");
-            check(near(recoveredFraction(reverse, 0, Mode::syntonicFifths) * syntonicComma(), fraction.value * commaSize(unit)),
-                  "Native columns retain the same physical fifth correction");
+            // P/24 and H/2 differ by only 0.00064 cents, so rounded CSV may
+            // legitimately select the other. Test the physical accuracy.
+            check(near(recoveredFraction(reverse, 0, Mode::syntonicFifths) * syntonicComma(), fraction.value * commaSize(unit),0.0010001),
+                  "Unified fractions retain the physical correction within CSV precision");
         }
     for (const auto* expression : { "H", "-H", "H/4", "-H/12" })
     {
@@ -208,7 +211,7 @@ int main()
         input[0][0] = evaluated(expression);
         input[0][6] = closingFraction(Mode::pythagoreanFifths, input[0], 6);
         const auto reverse = reverseCsv(csv(calculate(Mode::pythagoreanFifths, input).cents), Mode::syntonicFifths);
-        check(reverse.valid && reverse.expressions[0] == expression && reverse.pythagoreanExpressions[0] == "0",
+        check(reverse.valid && std::abs(evaluated(reverse.expressions[0],Mode::syntonicFifths)*syntonicComma()-evaluated(expression)*pythagoreanComma())<1e-7 && reverse.pythagoreanExpressions[0] == "0",
               "Schisma remains explicit when it is the correction itself");
     }
     const auto pairedArbitrary = reverseCsv("0;4;-1;2;-3;5;-2;1;3;0;-4;2", Mode::syntonicFifths);
@@ -363,6 +366,11 @@ int main()
     check(consonance(wolfHarmony.intervals[0][6]) == Consonance::rough
         && consonance(wolfHarmony.triads[12]) == Consonance::rough, "Wolf interval and its triad are red");
     check(near(wolfHarmony.intervals[1][0].errorCents, syntonicComma()), "Pythagorean C major third is one syntonic comma wide");
+    for(double deviation:{-schisma(),-pythagoreanComma()/12,schisma(),pythagoreanComma()/12,-2.0,2.0})
+    {
+        IntervalAnalysis fifth;fifth.kind=HarmonyInterval::fifth;fifth.errorCents=deviation;
+        check(consonance(fifth)==Consonance::good,"Standard fifth sensitivity gives schisma, ET, and the inclusive 2-cent boundary the same green rating");
+    }
     check(consonance(6) == Consonance::good && consonance(-6) == Consonance::good
         && consonance(18) == Consonance::tempered && consonance(-18.001) == Consonance::rough, "Colour limits are symmetric and include their endpoints");
     check(consonance(14, { 3, 12 }) == Consonance::rough && consonance(14, { 10, 25 }) == Consonance::tempered,

@@ -10,6 +10,9 @@ namespace temperament
 {
 enum class HarmonyInterval { fifth, majorThird, minorThird };
 enum class Consonance { good, tempered, rough };
+struct CircleConnection { int fromIndex, toIndex; HarmonyInterval kind; };
+// Circle indices, clockwise from C. All 36 directed intervals appear once.
+const std::array<CircleConnection,36>& fifthCircleConnections();
 struct ColourLimits { double good = 6, tempered = 18; };
 struct HarmonyColourLimits
 {

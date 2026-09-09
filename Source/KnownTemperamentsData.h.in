@@ -1,0 +1,5 @@
+// Generated at configure time from the user's Source/temperaments.csv catalogue.
+#pragma once
+namespace temperament { inline constexpr const char knownTemperamentCsv[] = R"TGCatalogue(
+@TEMPERAMENT_CATALOGUE@
+)TGCatalogue"; }

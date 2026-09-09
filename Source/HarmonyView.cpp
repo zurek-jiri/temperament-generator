@@ -102,6 +102,7 @@ void HarmonyView::updateSensitivity()
     limits.thirds = thirdsSensitivity.getSelectedId() == 1 ? temperament::ColourLimits { 5, 15 }
                   : thirdsSensitivity.getSelectedId() == 3 ? temperament::ColourLimits { 12, 30 } : temperament::ColourLimits { 8, 22 };
     refreshButtons(); setTooltip({}); repaint();
+    if (onColoursChanged) onColoursChanged();
 }
 juce::Colour HarmonyView::colour(temperament::Consonance quality) const
 {
@@ -144,13 +145,15 @@ void HarmonyView::refreshButtons()
 void HarmonyView::rebuildLattice()
 {
     nodes.clear(); edges.clear(); faces.clear();
+    const float leftWidth=juce::jmax(740.0f,getWidth()*0.62f);
+    const float graphHeight=juce::jmax(320.0f,static_cast<float>(getHeight()-202));
     // Rows stagger by half a fifth. Up/right = major third; down/right = minor third.
     for (int row = 0; row < 5; ++row)
         for (int column = 0; column < 6; ++column)
         {
             const int q = column - row / 2;
             nodes.push_back({ q, row, temperament::latticeNote(q, row, root - 3),
-                { 90.0f + 140.0f * (column + 0.5f * (row % 2)), 202.0f + 112.0f * (4 - row) } });
+                { 62.0f + (leftWidth-124)/5.5f * (column + 0.5f * (row % 2)), 142.0f + (graphHeight-84)/4 * (4 - row) } });
         }
     const auto find = [this](int q, int r) {
         for (size_t i = 0; i < nodes.size(); ++i) if (nodes[i].q == q && nodes[i].r == r) return static_cast<int>(i);
@@ -175,43 +178,33 @@ juce::Path HarmonyView::triangle(const Face& face) const
 }
 void HarmonyView::resized()
 {
-    rootChoice.setBounds(956, 52, 246, 48); chordChoice.setBounds(1214, 52, 218, 48);
-    sensitivity.setBounds(102, 860, 340, 48);
-    thirdsSensitivity.setBounds(592, 860, 340, 48);
-    for (size_t i = 0; i < chordButtons.size(); ++i)
-        chordButtons[i].setBounds(974 + static_cast<int>(i % 2) * 226, 518 + static_cast<int>(i / 2) * 42, 214, 38);
+    const int left=juce::roundToInt(getWidth()*0.62f),right=left+16,width=getWidth()-right;
+    rootChoice.setBounds(right,0,width/2-4,36);chordChoice.setBounds(right+width/2+4,0,width/2-4,36);
+    sensitivity.setBounds(74,getHeight()-88,left/2-82,34);
+    thirdsSensitivity.setBounds(left/2+84,getHeight()-88,left/2-84,34);
+    const int row=juce::jmin(40,(getHeight()-242)/12);
+    for(size_t i=0;i<chordButtons.size();++i)
+        chordButtons[i].setBounds(right+static_cast<int>(i%2)*(width/2+2),242+static_cast<int>(i/2)*row,width/2-4,row-2);
+    rebuildLattice();
 }
 void HarmonyView::paint(juce::Graphics& g)
 {
-    text(g, "Harmony lattice", { 0, 0, 932, 40 }, 34, ink, juce::Justification::centredLeft, true);
-    text(g, sourceLabel, { 0, 44, 932, 34 }, 24, muted);
-    text(g, "Choose a chord", { 956, 0, 476, 40 }, 28, ink, juce::Justification::centredLeft, true);
-    const auto arrow = [](int code) { return juce::String::charToString(code); };
-    text(g, arrow(0x2192) + " Fifth 3:2     " + arrow(0x2197) + " Major third 5:4     " + arrow(0x2198) + " Minor third 6:5",
-         { 0, 82, 932, 34 }, 26, muted);
-    card(g, { 0, 124, 932, 712 });
-    card(g, { 956, 124, 476, 306 });
-    card(g, { 956, 442, 476, 602 });
-    text(g, "All triads", { 978, 449, 430, 34 }, 28, ink, juce::Justification::centredLeft, true);
-    text(g, "Colour follows the weakest interval", { 978, 481, 430, 30 }, 24, muted);
-    text(g, "Fifths", { 0, 860, 98, 48 }, 26, ink, juce::Justification::centredLeft, true);
-    text(g, "Thirds", { 486, 860, 102, 48 }, 26, ink, juce::Justification::centredLeft, true);
-    text(g, "Green: good", { 0, 924, 296, 32 }, 26, green, juce::Justification::centredLeft, true);
-    text(g, "Orange: tempered", { 318, 924, 306, 32 }, 26, orange, juce::Justification::centredLeft, true);
-    text(g, "Red: rough", { 652, 924, 280, 32 }, 26, red, juce::Justification::centredLeft, true);
-    const auto lessEqual = arrow(0x2264);
-    text(g, "Fifths " + lessEqual + " " + juce::String(limits.fifths.good, 0) + " ct", { 0, 956, 296, 30 }, 24, muted);
-    text(g, "Fifths " + lessEqual + " " + juce::String(limits.fifths.tempered, 0) + " ct", { 318, 956, 306, 30 }, 24, muted);
-    text(g, "Fifths > " + juce::String(limits.fifths.tempered, 0) + " ct", { 652, 956, 280, 30 }, 24, muted);
-    text(g, "Thirds " + lessEqual + " " + juce::String(limits.thirds.good, 0) + " ct", { 0, 984, 296, 30 }, 24, muted);
-    text(g, "Thirds " + lessEqual + " " + juce::String(limits.thirds.tempered, 0) + " ct", { 318, 984, 306, 30 }, 24, muted);
-    text(g, "Thirds > " + juce::String(limits.thirds.tempered, 0) + " ct", { 652, 984, 280, 30 }, 24, muted);
-    text(g, "Colours compare tuning purity. Timbre and register also affect the sound.", { 0, 1030, 932, 32 }, 24, muted);
-    if (!analysis.valid)
+    const int left=juce::roundToInt(getWidth()*0.62f),right=left+16,width=getWidth()-right,h=getHeight();
+    text(g,"Harmony lattice",{0,0,left,36},30,ink,juce::Justification::centredLeft,true);
+    text(g,sourceLabel,{0,38,left,28},22,muted);
+    text(g,"Fifths 3:2 / Major thirds 5:4 / Minor thirds 6:5",{0,68,left,28},24,muted);
+    card(g,{0,100,static_cast<float>(left),static_cast<float>(h-202)});
+    card(g,{static_cast<float>(right),42,static_cast<float>(width),164});
+    text(g,"All triads / colour of weakest interval",{right,210,width,28},22,muted);
+    text(g,"Fifths",{0,h-88,70,34},22,ink,juce::Justification::centredLeft,true);
+    text(g,"Thirds",{left/2+10,h-88,70,34},22,ink,juce::Justification::centredLeft,true);
+    text(g,"Green: good",{0,h-44,left/3,30},22,green,juce::Justification::centredLeft,true);
+    text(g,"Orange: tempered",{left/3,h-44,left/3,30},22,orange,juce::Justification::centredLeft,true);
+    text(g,"Red: rough",{2*left/3,h-44,left/3,30},22,red,juce::Justification::centredLeft,true);
+    if(!analysis.valid)
     {
-        text(g, "No current temperament chart", { 40, 360, 852, 48 }, 34, ink, juce::Justification::centred, true);
-        text(g, "Return to a fifths tab and calculate a closed circle", { 40, 420, 852, 36 }, 26, muted, juce::Justification::centred);
-        text(g, "or import twelve CSV cent values.", { 40, 456, 852, 36 }, 26, muted, juce::Justification::centred);
+        text(g,"Calculate or import a temperament",{12,180,left-24,42},28,ink,juce::Justification::centred,true);
+        text(g,"Return to a fifths tab to enter your tuning",{12,228,left-24,34},24,muted,juce::Justification::centred);
         return;
     }
     for (const auto& face : faces)
@@ -240,32 +233,30 @@ void HarmonyView::paint(juce::Graphics& g)
     {
         const auto name = noteName(node.note);
         const bool chordTone = std::find(chord.notes.begin(), chord.notes.end(), node.note) != chord.notes.end();
-        const auto bounds = juce::Rectangle<float>(name.length() > 2 ? 112.0f : 66.0f, 52).withCentre(node.point);
+        const auto bounds = juce::Rectangle<float>(name.length() > 2 ? 92.0f : 58.0f, getHeight()<650?38.0f:50.0f).withCentre(node.point);
         g.setColour(field); g.fillRoundedRectangle(bounds, 15);
         g.setColour(chordTone ? ink : border); g.drawRoundedRectangle(bounds, 15, chordTone ? 2.5f : 1);
-        text(g, name, bounds.toNearestInt(), 28, ink, juce::Justification::centred, true);
+        text(g, name, bounds.toNearestInt(), getHeight()<650?22.0f:28.0f, ink, juce::Justification::centred, true);
     }
-    text(g, "Click a triangle to select its chord; a note selects the root.", { 24, 748, 884, 34 }, 26, ink, juce::Justification::centred);
-    text(g, "Names follow the selected key. Hover an edge for interval details.", { 24, 785, 884, 32 }, 24, muted, juce::Justification::centred);
-    text(g, chordName(root, minor), { 978, 135, 268, 40 }, 34, ink, juce::Justification::centredLeft, true);
-    text(g, qualityName(temperament::consonance(chord, limits)), { 1248, 140, 162, 34 }, 26, colour(temperament::consonance(chord, limits)), juce::Justification::centredRight, true);
-    text(g, noteName(chord.notes[0]) + " - " + noteName(chord.notes[1]) + " - " + noteName(chord.notes[2]), { 978, 177, 430, 34 }, 26, muted);
-    for (size_t i = 0; i < chord.intervals.size(); ++i)
+    text(g,chordName(root,minor),{right+10,46,width-150,30},26,ink,juce::Justification::centredLeft,true);
+    text(g,qualityName(temperament::consonance(chord,limits)),{right+width-138,46,128,30},22,colour(temperament::consonance(chord,limits)),juce::Justification::centredRight,true);
+    text(g,noteName(chord.notes[0])+" - "+noteName(chord.notes[1])+" - "+noteName(chord.notes[2]),{right+10,76,width-20,26},22,muted);
+    for(size_t i=0;i<chord.intervals.size();++i)
     {
-        const auto& interval = chord.intervals[i];
-        const int y = 222 + static_cast<int>(i) * 66;
-        text(g, juce::String(temperament::harmonyIntervalName(interval.kind)) + "  " + noteName(interval.from) + " > " + noteName(interval.to),
-             { 978, y, 430, 30 }, 26, colour(temperament::consonance(interval, limits)), juce::Justification::centredLeft, true);
-        text(g, temperament::formatCents(interval.errorCents, true) + " ct from pure (" + temperament::harmonyRatio(interval.kind) + ")",
-             { 978, y + 30, 430, 30 }, 24, muted);
+        const auto& interval=chord.intervals[i];
+        const int y=110+static_cast<int>(i)*30;
+        const auto kind=interval.kind==temperament::HarmonyInterval::fifth?"Fifth":interval.kind==temperament::HarmonyInterval::majorThird?"Major 3rd":"Minor 3rd";
+        text(g,juce::String(kind)+"  "+noteName(interval.from)+" > "+noteName(interval.to),{right+10,y,width-170,28},22,colour(temperament::consonance(interval,limits)),juce::Justification::centredLeft,true);
+        text(g,temperament::formatCents(interval.errorCents,true)+" ct",{right+width-158,y,148,28},22,muted,juce::Justification::centredRight);
     }
 }
+
 bool HarmonyView::selectAt(juce::Point<float> point)
 {
     if (!analysis.valid) return false;
     for (const auto& node : nodes)
     {
-        const auto bounds = juce::Rectangle<float>(noteName(node.note).length() > 2 ? 112.0f : 66.0f, 52).withCentre(node.point);
+        const auto bounds = juce::Rectangle<float>(noteName(node.note).length() > 2 ? 92.0f : 58.0f, getHeight()<650?38.0f:50.0f).withCentre(node.point);
         if (bounds.contains(point)) { selectChord(node.note, minor); return true; }
     }
     for (const auto& face : faces)

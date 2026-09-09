@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 3.22)
-project(TemperamentGenerator VERSION 1.4.2 LANGUAGES C CXX)
+project(TemperamentGenerator VERSION 1.5.5 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(JUCE_PATH "" CACHE PATH "Optional path to an existing JUCE 8.0.12 checkout")
 
-add_library(temperament_core Source/Temperament.cpp Source/Expression.cpp Source/Automatic.cpp Source/Harmony.cpp)
-target_include_directories(temperament_core PUBLIC Source)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Source/temperaments.csv")
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Source/temperaments.csv" TEMPERAMENT_CATALOGUE)
+configure_file(Source/KnownTemperamentsData.h.in generated/KnownTemperamentsData.h @ONLY)
+add_library(temperament_core Source/Temperament.cpp Source/Expression.cpp Source/Automatic.cpp Source/Harmony.cpp Source/Reconstruction.cpp Source/KnownTemperaments.cpp)
+target_include_directories(temperament_core PUBLIC Source PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 if(MSVC)
     target_compile_options(temperament_core PUBLIC /EHsc)
 endif()
@@ -17,6 +20,9 @@ if(BUILD_TESTING)
     add_executable(TemperamentTests Tests/TemperamentTests.cpp)
     target_link_libraries(TemperamentTests PRIVATE temperament_core)
     add_test(NAME TemperamentMath COMMAND TemperamentTests)
+    add_executable(ReconstructionTests Tests/ReconstructionTests.cpp)
+    target_link_libraries(ReconstructionTests PRIVATE temperament_core)
+    add_test(NAME ReconstructionAndClosure COMMAND ReconstructionTests)
 endif()
 
 option(BUILD_GUI "Build the JUCE desktop application" ON)
@@ -41,7 +47,7 @@ if(BUILD_GUI)
         ICON_BIG "Source/TuningFork.svg"
         ICON_SMALL "Source/TuningFork.svg"
         BUNDLE_ID "io.github.zurek-jiri.temperament-generator")
-    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/HarmonyView.cpp)
+    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/CentDeviationView.cpp Source/HarmonyView.cpp Source/ClosingPanel.cpp)
     target_compile_definitions(TemperamentGenerator PRIVATE
         JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:TemperamentGenerator,JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="${PROJECT_VERSION}")

@@ -26,7 +26,7 @@
         <p>Temperament Generator connects precise tuning calculations with a clear, visual view of your intervals and chords.</p>
         <p class="note">This software was created to celebrate the 60th birthday of our beloved friend <strong>Jiri Kopecky</strong> and is dedicated to him.</p>
         <div class="actions"><a class="button primary" href="#explore">Explore the application <span aria-hidden="true">↗</span></a><a class="button secondary" href="#start">Build &amp; availability</a></div>
-        <p class="availability"><span class="status-dot" aria-hidden="true"></span> Windows desktop · Linux verification planned</p>
+        <p class="availability"><span class="status-dot" aria-hidden="true"></span> Windows x64 · macOS · Linux x64</p>
       </div>
       <div class="hero-art" aria-label="A circle of fifths around a tuning fork" role="img">
         <svg viewBox="0 0 520 520" aria-hidden="true">
@@ -63,25 +63,26 @@
         <button type="button" aria-pressed="false" data-view="harmony">Harmony lattice</button>
       </div>
       <figure class="app-preview">
-        <a id="screenshot-link" href="assets/fifths.png" target="_blank" rel="noopener" aria-label="Open application screenshot at full size in a new tab"><img id="screenshot" src="assets/fifths.png" width="1480" height="1080" alt="Pythagorean circle of fifths with editable comma fractions and a twelve-note cents chart." loading="lazy"></a>
+        <a id="screenshot-link" href="assets/fifths.png" target="_blank" rel="noopener" aria-label="Open application screenshot at full size in a new tab"><img id="screenshot" src="assets/fifths.png" width="1320" height="680" alt="Inputs around the circle with editable comma formulas, a cent-deviation bar chart and catalogue suggestions." loading="lazy"></a>
         <figcaption><span id="screenshot-caption" aria-live="polite">Set each fifth in comma fractions and calculate a chart relative to A.</span><a id="full-size" href="assets/fifths.png" target="_blank" rel="noopener">View full size ↗</a></figcaption>
       </figure>
       <div class="feature-grid">
-        <article><span class="feature-number">01</span><h3>Write the relationships</h3><p>Use Pythagorean or syntonic comma fractions, expressions such as <code>1-1/11</code>, and the schisma. Paired columns keep the two comma units distinct.</p></article>
-        <article><span class="feature-number">02</span><h3>Let the circle close</h3><p>Mark one or more fields as automatic. The remaining correction is shared equally in cents, with nearby simple fractions shown to help you read the result.</p></article>
+        <article><span class="feature-number">01</span><h3>Write the relationships</h3><p>Use Pythagorean or syntonic comma fractions, expressions such as <code>1-1/11</code>, and the schisma. Combine the comma units in one field, with compact circle inputs or a wide formula list.</p></article>
+        <article><span class="feature-number">02</span><h3>Let the circle close</h3><p>Mark one or more fields as automatic. The remaining correction is shared equally in cents, with nearby simple fractions shown to help you read the result. Rotate the tuning by fifths in either direction.</p></article>
         <article><span class="feature-number">03</span><h3>Inspect the harmony</h3><p>Follow fifths, major thirds and minor thirds across the lattice. Clear colours, bold connections and separate sensitivities reveal the tuning of each interval.</p></article>
       </div>
+      <p class="note">A built-in catalogue of around 30 known historical temperaments suggests names, related tunings and their rotations.</p>
       <p class="note">Harmony colours describe distance from pure intervals. The sound also depends on timbre, register and musical context.</p>
     </section>
     <section id="start" class="getting-started">
       <div class="wrap start-grid">
-        <div><p class="eyebrow">Get started</p><h2>Your tuning,<br>in twelve numbers.</h2><p>Enter your corrections, calculate the chart, then copy a semicolon-separated row from C through B. Import the same format to recover readable comma fractions.</p><a class="text-link" href="../README.md" data-repo-path="README.md">Read the application guide →</a></div>
+        <div><p class="eyebrow">Get started</p><h2>Your tuning,<br>in twelve numbers.</h2><p>Enter your corrections, calculate the chart, then copy a semicolon-separated row from C through B. Import the same format to recover readable comma fractions.</p><a class="text-link" href="../docs/USER_MANUAL.md" data-repo-path="docs/USER_MANUAL.md">Read the application guide →</a></div>
         <div class="download-card">
-          <p class="eyebrow">Free desktop application</p><h3>Download for Windows</h3><p>Explore and design temperaments on your own computer. No account, subscription or separate JUCE installation is needed to use the application.</p>
-          <p><strong>Linux:</strong> portable build instructions and automated checks are prepared. A Linux release still needs validation.</p>
+          <p class="eyebrow">Free desktop application</p><h3>Download for your computer</h3><p>Explore and design temperaments on your own computer. No account, subscription or separate JUCE installation is needed to use the application.</p>
+          <p><strong>Windows x64, macOS and Linux:</strong> choose your download on the release page. Mac builds are available for Apple Silicon and Intel.</p>
           <a class="button primary" href="https://github.com/zurek-jiri/temperament-generator/releases" data-repo-suffix="/releases">Download &amp; release notes →</a>
           <a class="text-link" href="../docs/BUILDING.md" data-repo-path="docs/BUILDING.md">Build from source ↗</a>
-          <p class="small">Version <span data-version>1.4.2</span> · Windows 10/11, 64-bit. Free and open source under AGPLv3.</p>
+          <p class="small">Version <span data-version>1.5.5</span> · Windows 10/11, macOS 13+, Ubuntu 24.04. Free and open source under AGPLv3.</p>
         </div>
       </div>
     </section>
@@ -89,7 +90,7 @@
       <div><p class="eyebrow">The project</p><h2>Made for careful exploration.</h2><p>Large text, explicit fractions and an uncluttered workspace keep the music at the centre. The desktop application works locally; this website is an introduction and guide.</p></div>
       <div class="project-details">
         <details open><summary>Free and open source</summary><p id="license-intro">Maintained by zurek-jiri. You may use, modify and redistribute this application under AGPLv3, including commercially.</p><p id="license-status">Provided without warranty. The full license, library notices and corresponding source accompany the releases.</p></details>
-        <details><summary>Windows and Linux</summary><p>The C++ calculation code is separate from the JUCE interface. Keeping JUCE allows the same design to be built on both platforms. Linux requires a native build and desktop testing.</p></details>
+        <details><summary>Windows, macOS and Linux</summary><p>The C++ calculation code is separate from the JUCE interface. Keeping JUCE allows the same design to be built on all three platforms. Native builds include automated calculation and GUI checks.</p></details>
         <details><summary>Reporting an issue</summary><p>Include your application version, operating system, the input values and what you expected to happen. A reproducible CSV row is especially useful.</p><a class="text-link" href="../CONTRIBUTING.md" data-repo-path="CONTRIBUTING.md">Contribution guide →</a><a class="text-link" data-repo-suffix="/issues" hidden>GitHub issues ↗</a></details>
       </div>
     </section>

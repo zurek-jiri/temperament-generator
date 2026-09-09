@@ -38,19 +38,51 @@ struct ReverseCalculation
     std::array<double, 12> cents {};
     std::array<double, 12> intervalErrors {};
     std::array<std::string, 12> expressions;
-    // Additional Pythagorean contribution in the paired (syntonic) mode.
+    // Legacy core compatibility: always zero; the GUI uses expressions only.
     std::array<std::string, 12> pythagoreanExpressions;
     double closureError = 0;
     std::string error;
 };
 
-const std::array<SimpleFraction, 15>& simpleFractions();
+enum class Reconstruction { nearestFraction, precise };
+const std::array<SimpleFraction, 17>& simpleFractions();
 size_t nearestSimpleFraction(double value);
-ReverseCalculation reverseCsv(const std::string& line, Mode mode = Mode::pythagoreanFifths);
+ReverseCalculation reverseCsv(const std::string& line, Mode mode = Mode::pythagoreanFifths,
+                              Reconstruction = Reconstruction::nearestFraction);
+
+struct CommaComponents { double p = 0, s = 0; };
+bool expressionComponents(const std::string&, Mode, CommaComponents&);
+std::string commaExpression(CommaComponents);
+
+enum class ClosingMethod { automaticFields, selectedEqually, allEqually, simpleFit };
+struct ClosingRequest
+{
+    Mode mode = Mode::pythagoreanFifths;
+    ClosingMethod method = ClosingMethod::selectedEqually;
+    std::array<std::string, 12> expressions;
+    std::array<bool, 12> selected {};
+    bool useTargets = false; // Unrounded fifth corrections from imported CSV, in cents.
+    std::array<double, 12> targets {};
+    double maximumChange = 0.1; // Simple-fit limit for each selected fifth, in cents.
+};
+struct ClosingProposal
+{
+    bool valid = false;
+    std::array<std::string, 12> expressions;
+    std::array<double, 12> corrections {}, changes {};
+    double closureBefore = 0, closureAfter = 0, maximumChange = 0;
+    std::string message;
+};
+ClosingProposal proposeClosing(const ClosingRequest&);
 
 struct ExpressionChoice { std::string text; double value; };
+ExpressionChoice preciseExpression(double cents, Mode);
 std::vector<ExpressionChoice> expressionChoices(Mode);
+std::vector<ExpressionChoice> reconstructionChoices(Mode);
 bool evaluateExpression(const std::string&, Mode, double& value, std::string& error);
+// Preserve the physical correction when showing a formula in the other tab.
+// An empty result denotes an invalid expression; Auto remains Auto.
+std::string expressionInMode(const std::string&, Mode from, Mode to);
 std::string fractionExpression(double value, Mode);
 struct CommaExpressions { std::string syntonic, pythagorean; };
 // Prefer a native menu fraction in its own column; never round the correction.
@@ -103,4 +135,6 @@ double closingFraction(Mode, const std::vector<double>&, int closingEdge);
 Calculation calculate(Mode, const std::vector<std::vector<double>>& fractions);
 std::string formatCents(double, bool showPositiveSign = false);
 std::string csv(const std::array<double, 12>&);
+// Positive steps move C-G's correction to G-D; A is normalised back to zero.
+std::array<double, 12> rotateChartFifths(const std::array<double, 12>&, int steps);
 }

@@ -1,0 +1,85 @@
+name: Prepare desktop release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create or verify draft for this exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python Tools/release_assets.py prepare
+
+  desktop:
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            source: --include-source
+          - os: ubuntu-24.04
+            source: ''
+          - os: macos-14
+            source: ''
+          - os: macos-15-intel
+            source: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: juce-framework/JUCE
+          ref: 8.0.12
+          path: Builds/JUCE
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build pkg-config libfontconfig1-dev libfreetype-dev \
+            libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev \
+            libxrandr-dev libxrender-dev libgl1-mesa-dev fonts-dejavu-core xvfb xauth
+      - name: Build, test and check GUI rendering
+        run: python Tools/ci_build.py --juce-path Builds/JUCE
+      - name: Package native executable, manual, notices and checksums
+        run: python Tools/package_release.py --build-dir Builds/ci --juce-path Builds/JUCE ${{ matrix.source }}
+      - name: Upload to draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python Tools/release_assets.py upload
+
+  verify:
+    needs: desktop
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download and verify all archives, combine checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python Tools/release_assets.py verify
+      # Release assets only: no Actions artifact storage or caches.
+      # Publish separately after reviewing these checks and the release notes.

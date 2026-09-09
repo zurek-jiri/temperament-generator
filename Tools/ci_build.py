@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # See LICENSE and COPYRIGHT for terms and the no-warranty notice.
 
-"""Portable Windows/Linux build, mathematical tests, and GUI smoke checks."""
+"""Windows x64, Linux and macOS build, tests, and GUI smoke checks."""
 import argparse
 import os
 from pathlib import Path
@@ -22,15 +22,20 @@ def main():
     environment = dict(os.environ)
     if sys.platform == "win32":
         environment = {key.upper(): value for key, value in environment.items()}
-    elif not sys.platform.startswith("linux"):
-        parser.error("This build helper currently targets Windows and Linux.")
+    elif sys.platform != "darwin" and not sys.platform.startswith("linux"):
+        parser.error("Supported build hosts: Windows, Linux and macOS.")
 
     def run(command, timeout=None):
         print("Running: " + repr(command), flush=True)
         subprocess.run(command, cwd=str(root), env=environment, check=True, timeout=timeout)
 
     configure = ["cmake", "-S", str(root), "-B", str(build)]
-    configure += ["-A", "x64"] if sys.platform == "win32" else ["-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release"]
+    if sys.platform == "win32":
+        configure += ["-A", "x64"]
+    else:
+        configure += ["-G", "Unix Makefiles" if sys.platform == "darwin" else "Ninja", "-DCMAKE_BUILD_TYPE=Release"]
+        if sys.platform == "darwin":
+            configure += ["-DCMAKE_OSX_DEPLOYMENT_TARGET=13.0"]
     if args.juce_path:
         configure += ["-DJUCE_PATH=" + str(Path(args.juce_path).resolve())]
     run(configure)
@@ -38,6 +43,8 @@ def main():
     run(["ctest", "--test-dir", str(build), "-C", "Release", "--output-on-failure"])
     suffix = ".exe" if sys.platform == "win32" else ""
     app = build / "TemperamentGenerator_artefacts" / "Release" / ("Temperament Generator" + suffix)
+    if sys.platform == "darwin":
+        app = app.with_suffix(".app") / "Contents" / "MacOS" / "Temperament Generator"
     command = [str(app), "--render-preview", str(preview)]
     if sys.platform.startswith("linux"):
         command = ["xvfb-run", "-a"] + command

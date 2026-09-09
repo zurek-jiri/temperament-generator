@@ -1,9 +1,10 @@
-# Temperament Generator 1.4.2
+# Temperament Generator 1.5.5
 
 Desktop tools for designing twelve-note temperaments, converting comma corrections
 to tuning charts, and exploring fifths and thirds in a harmony lattice.
 
-- [Build on Windows or Linux](docs/BUILDING.md)
+- [Build on Windows, macOS or Linux](docs/BUILDING.md)
+- [User manual](docs/USER_MANUAL.md)
 - [Project website](https://zurek-jiri.github.io/temperament-generator/)
 - [Downloads and corresponding source](https://github.com/zurek-jiri/temperament-generator/releases)
 - [Release history](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
@@ -13,8 +14,10 @@ Maintained by [zurek-jiri](https://github.com/zurek-jiri). Free and open source 
 [AGPLv3](LICENSE). Copyright (C) 2026 zurek-jiri and contributors. Provided without
 warranty; redistribution and modification are permitted under that license.
 
-Windows builds are tested locally. Linux builds are checked by CI; a Linux desktop
-release still requires interactive validation. The app's **About / licenses**
+Windows x64, macOS (Apple Silicon and Intel), and Linux x64 downloads include the
+illustrated manual. Native builds run calculation and offscreen GUI checks;
+Windows is also tested locally. See the release notes for platform requirements.
+The app's **About / licenses**
 button provides the complete license and third-party notices offline.
 
 This software is based in part on the work of the Independent JPEG Group.
@@ -30,49 +33,99 @@ C -> G -> D -> A -> E -> B -> F#/Gb -> Db/C# -> Ab/G# -> Eb/D# -> Bb -> F -> C
 C is at the top, F#/Gb at the bottom. Counterclockwise, the left branch follows descending fifths
 (ascending fourths modulo octaves). Correction signs always describe clockwise fifths.
 
-## Modes and calculation
+## Input layouts and calculation
 
-- **Pythagorean / fifths:** enter Pythagorean-comma corrections in the circle's boxes.
-- **Syntonic / fifths:** the numbered edges correspond to the adjacent table. Enter syntonic
-  and Pythagorean comma contributions side by side. **The two contributions add.** The resulting
-  cent-deviation chart appears below the circle and input table.
+Both tabs edit the same temperament, with one formula field per fifth.
+**Inputs around circle** places compact boxes directly outside the circle.
+**Formula list** keeps wide fields on the right for longer expressions, linked by
+numbered outside markers. Clicking a marker opens its field for editing.
 
-Positive corrections widen a pure fifth; negative corrections narrow it; zero leaves it pure.
-**Calculate chart** uses the entered intervals. **Close circles** keeps eleven fifths and adjusts
-F#/Gb-to-Db/C#. In paired mode a recognised menu fraction goes in its own comma column, with
-zero in the other field; other closing corrections use a syntonic expression. Inconsistent circles
-report a closure error.
+Both layouts include a **Cents vs equal** bar chart, in chromatic order from C
+to B. It sits on the right of Inputs around circle, and between the circle and
+the formula fields in Formula list. **Blue bars extend left for flat notes;
+pink bars extend right for sharp notes.** The centre line is zero; A stays there.
+The symmetric scale adapts to the current tuning and is labelled in cents.
+The wider chart includes signed numerical values; hover over any row for its
+three-decimal deviation. Both charts follow the current imported or calculated
+tuning, including rotations, and clear their bars when no valid chart is available.
 
-**Equal temperament** resets all notes to zero deviation, using `-1/12` in the Pythagorean column
-and zero in the syntonic column. **Pure intervals** zeros all contributions;
-the resulting circle requires a closing wolf fifth. Switching tabs preserves each tab's inputs.
+The interface adjusts to laptop and desktop windows. Circle and lattice views,
+the cent chart, CSV controls and closing actions fit a typical 1366×768 display;
+fonts remain at least 22 pixels. Larger windows give the diagrams more room.
+Unusually small windows retain scrolling rather than shrinking text.
+
+- **Inputs around circle:** compact boxes for seeing the fractions at their fifths.
+- **Formula list:** wide fields for more involved calculations.
+- In either tab, name the unit explicitly: `-P/12`, `-S/4`, `schisma/2`, or `-S/4-schisma/4`.
+  **schisma = P - S**, so `-S/4-schisma/4` equals `-P/4`. There is no second contribution column.
+  For compatibility, bare fractions still default to P in the compact layout and
+  S in the list layout; synchronisation preserves the physical correction in both.
+
+Positive corrections widen a pure fifth; negative corrections narrow it; zero
+leaves it pure. **Calculate chart** evaluates the formulas and any automatic fields.
+A valid circle must have a total correction of **-P**. Invalid or edited inputs
+clear the old chart and interval colours until a new calculation succeeds.
+
+**Equal temperament** uses `-P/12` for every fifth (shown as `-1/12` in the compact
+layout). **Pure fifths** zeros all corrections and leaves a closure
+gap. Edits, presets and imports update both layouts together.
+
+## Interval colours on the circle
+
+The fifth arcs and all thirds use the same purity analysis and colour settings as
+the harmony lattice. Major thirds make **four triangles**; minor thirds make
+**three squares**. Green, orange and red show increasing distance from the pure
+ratios 3:2, 5:4 and 6:5. Fifths have stricter limits than thirds.
+
+Click a tone to thicken its six connected fifths and thirds and dim the remaining
+connections. Click it again, or click outside the circle, to clear the selection. This changes only the visual
+analysis. Hover over a tone for its outgoing interval errors. Enharmonic pairs
+remain visible on circle nodes; the lattice offers chord-specific spelling.
+
+## Closing options
+
+**Close circle...** opens a preview window. Choose one of:
+
+- **Adjust one fifth:** select any of the twelve fifths.
+- **Share equally across selected fifths:** tick the fifths that may change.
+- **Share equally across all twelve fifths.**
+- **Prefer simple fractions (inference):** choose allowed fifths and the maximum
+  change per fifth in cents. The calculation favours readable small-number expressions, preserves simple
+  fifths and concentrates any more complex remainder in an exceptional fifth.
+  A measured tuning can also use small schisma adjustments to a shared base.
+  All proposed changes must satisfy the limit; inspect them before applying.
+- **Resolve automatic fields:** share the remaining correction only among Auto fields.
+
+**Preview changes** lists the before/after formulas, each fifth's change, the
+largest change, and the closure error. **Apply and calculate** installs the
+proposal; Cancel leaves the tuning intact. Fixed, unselected formulas are preserved.
+Explicit adjustment methods replace any Auto fields with their calculated formulas.
+
+After CSV import, inference fits the original imported fifths, not already rounded
+menu fractions. It cannot identify the creator's original intent uniquely.
+The exact equal-adjustment options act on the current formula values.
+See [reconstruction and closure algorithms](docs/RECONSTRUCTION.md) for search limits.
 
 ## Automatic calculation
 
 Choose **Automatic calculation** at the top of any comma dropdown, or type `Auto`.
-The field displays **Auto** in green at the normal large font size. Click **Calculate chart**
-or **Close circles** to share the remaining correction equally in cents among all automatic fields.
-Fixed expressions stay unchanged, including the usual closing fifth. With no automatic fields,
-the existing calculation and closing behaviour applies.
+Click **Calculate chart**, or preview **Resolve automatic fields** in the closing
+window. Fixed formulas stay unchanged; all Auto fields receive the same physical
+cent correction:
 
-The split is over **fields** in both columns. Each selected field receives
-`(-P - sum_of_fixed_corrections_in_cents) / number_of_automatic_fields` cents, expressed using
-that field's comma. If both fields in one fifth are automatic, that fifth receives two shares.
-The share can be negative, positive or zero. Four automatic Pythagorean fields with all other
-corrections zero each contribute `-1/4`; twelve contribute `-1/12` and give equal temperament.
+```text
+(-P - sum_of_fixed_corrections) / number_of_automatic_fields
+```
 
-Auto remains selected after calculation, so later edits can be balanced again. The circle centre
-shows the number of automatic fields, the cent share, and its nearest fractions of both syntonic
-(diatonic) and Pythagorean (ditonic) comma. The closest ratio is highlighted green. Fractions are
-reduced, with denominators up to 24; the comparison uses their absolute cent error. Equal errors
-prefer a smaller denominator, then the active tab's comma. An `=` marks an exact match within
-0.0000001 cents; an approximation uses `≈`. For example, `-5.865002596...` cents appears as
-`= -1/4 P` and `≈ -3/11 S`, with the Pythagorean ratio highlighted.
+Four automatic fields with other corrections zero each contribute `-P/4`;
+twelve contribute `-P/12`. Auto remains selected so later edits can be balanced again.
 
-Hover over an Auto field to see both ratios, the closest comma and signed approximation errors
-in the large tooltip. Calculation retains full precision so the displayed approximations do not
-alter the chart or circle closure. Selecting a number or expression replaces that field's Auto mode.
-Presets and CSV import replace Auto selections with their own values.
+The status line shows the Auto field count, cent share,
+and nearby fractions of S and P, ordered by closeness. Denominators are
+at most 24; `=` means exact within 0.0000001 cents and `≈` means approximate.
+Hover over an Auto field for both signed errors, with the closest estimate first. The chart
+uses the full-precision Auto value, never the rounded display fraction.
+Presets and CSV import replace Auto fields with their own values.
 
 ## Harmony lattice
 
@@ -109,8 +162,10 @@ These thresholds are adjustable visual conventions, not universal hearing thresh
 register and voicing also influence perceived roughness. The triangle tint and chord button use
 the **worst interval rating under its own limits**: a red fifth keeps a chord red even if a larger
 third deviation is only orange. Tooltips also report the largest absolute cent error.
-For example, equal temperament has green fifths and orange thirds with Standard sensitivity;
-quarter-comma meantone shows pure major thirds in its favourable keys and red wolf intervals.
+For example, equal temperament has green fifths and orange thirds with Standard sensitivity.
+both `-schisma` (about -1.953721 ct) and `-P/12` (about -1.955001 ct) are inside
+the inclusive 2-cent green fifth limit.
+Quarter-comma meantone shows pure major thirds in its favourable keys and red wolf intervals.
 
 The view uses the calculated chart or the original imported CSV values, as labelled above the lattice.
 Opening it after an edit attempts a calculation, including Auto fields. Invalid inputs show an empty
@@ -133,20 +188,19 @@ Decimal commas and scientific notation work. Multiplication must be explicit.
 | --- | --- |
 | `1-1/11` | 10/11 of the field's comma |
 | `-(1-1/11)/2` | -5/11 of the field's comma |
-| `schisma` or `H` | One schisma, in either column |
-| `-H/2` | Narrow by half a schisma |
-| `syntonic` or `S` | One syntonic comma, in either column |
-| `pythagorean` or `P` | One Pythagorean comma, in either column |
+| `schisma` or `H` | One schisma, in either tab |
+| `-schisma/2` | Narrow by half a schisma |
+| `syntonic` or `S` | One syntonic comma, in either tab |
+| `pythagorean` or `P` | One Pythagorean comma, in either tab |
 | `-syntonic/4+pythagorean/12` | Combine the two named physical corrections |
 | `ET` | The correction from a pure fifth to a 700-cent fifth |
 
-Bare numbers use the column's unit. Named commas retain their physical cent values. In a syntonic
-field, `-1-schisma` or `-1-H` therefore equals one negative Pythagorean comma. `H` is an expression
-variable; the musical note called H in Czech/German is labelled B.
+Bare numbers use the tab's default unit. Named commas retain their physical cent values. In a syntonic
+field, `-1-schisma` or `-1-H` therefore equals one negative Pythagorean comma. `H` remains a backwards-compatible alias for `schisma`; generated expressions spell out the name. The musical note called H in Czech/German is labelled B.
 
-Menus include zero, positive and negative 1, 1/2, 1/3, 1/4, 1/5, 1/6, 1/12, schisma fractions,
-and exact expressions for fractions of the other comma. For example, `-1/12-H/12` in syntonic units
-gives equal temperament; `-1/4+H/4` in Pythagorean units is one negative quarter syntonic comma.
+Menus include zero and positive and negative fractions of P, S and schisma with denominators
+1, 2, 3, 4, 5, 6, 12 and **24**. For example, `-P/12` gives equal temperament and
+`-P/4+schisma/4` is one negative quarter syntonic comma.
 
 Expressions are limited to 512 characters and nesting depth 32. Invalid syntax, unknown names,
 division by zero, nonfinite values and corrections exceeding 1000 commas in magnitude are rejected.
@@ -159,33 +213,94 @@ from equal temperament, normalised to **A = 0.000 cents** and rounded to three d
 Use **Copy CSV** or select the output text. Positive note deviations are sharp; negative ones are flat.
 
 To reverse a chart, select the comma tab, paste twelve semicolon-separated numeric cent values into
-**CSV input**, and click **CSV to fifths** or press Enter. Import stays in the selected mode.
+**CSV in**, and click **Import CSV** or press Enter. Import updates both circle layouts.
 A nonzero input A is subtracted from all twelve notes.
 
 ```text
 fraction = (700 + deviation[next] - deviation[current] - pure_fifth_cents) / selected_comma_cents
 ```
 
-Each result is independently snapped to the nearest menu expression, including schisma expressions.
-The boxes show readable fractions or expressions rather than raw decimal ratios. Ties favour smaller
-magnitude, then menu order.
+Select the reconstruction method before importing:
 
-- Normal text: exact within numerical tolerance.
-- **Amber:** interval rounding no greater than 0.001 cents, consistent with three-decimal CSV.
-- **Red:** the nearest menu expression differs by more than 0.001 cents.
+- **Nearest fractions:** independently choose the closest menu correction in
+  cents, including P, S and schisma fractions and ±1/24, plus multiples by 2, 3 and 4. Ties favour smaller magnitude,
+  then menu order. Native fractions appear directly as `-P/4` or `-S/4` in the
+  list layout, using their native comma. `P*2/6` simplifies to `P/3`; `S*3/4` remains explicit.
+  Generated formulas put the comma first, as in `P*3/5`; either input order is accepted.
+- **Precise simple expressions:** prefer small fractions and combinations of two
+  comma terms. Once a candidate is within CSV rounding uncertainty, simplicity
+  takes priority over another meaningless decimal place. Ordinary tuning
+  corrections use numerators up to 12 and denominators up to 24. The displayed
+  formula keeps those small terms instead of expanding them into large numbers.
 
-In paired mode, import uses the **native comma column** for each recognised simple fraction.
-Because `P = S + H`, a correction formerly displayed as `-1/4-H/4` in the syntonic column now
-appears as **Syntonic: `0`, Pythagorean: `-1/4`**. A quarter syntonic comma appears as
-**Syntonic: `-1/4`, Pythagorean: `0`**. Schisma-only corrections retain an explicit `H` expression.
-Rounding colour and the error tooltip appear on the field containing the recovered correction.
-Import selects the nearest menu correction by its physical cent value; it does not recover the
-original spelling or an arbitrary split between contributions.
+Three-decimal CSV has a ±0.0005-cent rounding interval per note. A fifth is the
+difference of two note deviations, so its uncertainty can reach ±0.001 cents.
+An adequate small expression is labelled **Within CSV precision**. It is an
+interpretation of the data, not a proof of its original spelling.
 
-The chart and output remain labelled **imported values** until forward calculation succeeds.
-Independent rounding may prevent closure: the app reports this without changing another interval.
-Edit expressions or use **Close circles** to calculate a new chart. Invalid CSV preserves the existing
-circle and chart. Editing circle inputs invalidates stale output.
+For the catalogue's quarter-comma meantone, precise reconstruction gives eleven
+`-S/4` fields and `S*7/4-schisma` for the Ab–Eb wolf. The wolf equals `S*11/4-P`,
+so those formulas close exactly. Tiny rounding differences do not contaminate
+the other eleven fifths with elaborate expressions.
+
+The status reports the largest fifth error. Each field's tooltip gives its signed
+error (formula minus CSV-derived correction): normal text means exact within
+0.0000001 cents, **amber** means an error at most 0.001 cents, and **red** means more.
+For example, P/24 and schisma/2 differ by only about 0.00064 cents. Rounded CSV may select
+either; it does not reliably encode the original comma spelling.
+
+The chart, CSV output and interval colours retain the **imported values**, normalised
+to A, until forward calculation succeeds. Independently fitted expressions may not
+close; the app reports their closure error without silently changing a fifth.
+Use **Close circle...** to preview a closed tuning. Invalid CSV leaves the existing
+circle and chart intact. Editing a formula invalidates stale output.
+
+Both editing tabs show one working temperament. Switching tabs preserves the
+chart and CSV; bare fractions are converted to retain their physical comma unit.
+**CSV in always retains the user's original pasted text**, including its original
+A reference and formatting. Calculations, failed closure, edits, presets and
+rotation never clear or overwrite it. Only editing or pasting into that field
+changes it. **CSV out** updates with the current A-normalised result, or clears
+when the result is invalid, so the two rows can be compared directly.
+
+Use **Rotate CW** or **Rotate CCW** beside the circle to move all formulas,
+including Auto, by one fifth. Clockwise moves C–G's correction to G–D;
+counter-clockwise reverses this. Imported charts rotate without re-quantisation,
+and calculated charts update from the rotated formulas, always with A = 0.
+**Close circle** and **Calculate chart** occupy the two lower circle corners.
+
+## Known temperament suggestions
+
+The supplied [temperaments.csv](Source/temperaments.csv) is embedded in the
+executable at build time; no separate CSV file is needed to run the app.
+After import or calculation, the app compares the A-normalised chart with all
+31 catalogue entries and their twelve rotations. Nearby matches must be within 1 cent
+at every note. The suggestion shows the name, rotation in fifths, and maximum difference.
+Values within 0.001 cents are labelled a catalogue match; other qualifying
+results are labelled near a known temperament.
+
+Aliases are retained: equal temperament also matches the catalogue's Neidhardt
+Hof entry. **Suggestions** opens a large-text, scrollable list. All close names
+and distinct rotations come first, sorted by maximum error and then RMS error.
+The best harmonic alternatives bring the list to at least five distinct names,
+using each alternative's best rotation. Identical symmetric rotations appear
+only once per name. Catalogue comments accompany every result.
+
+Alternatives compare all twelve fifths, major thirds and minor thirds. The
+harmonic distance is the square root of half the squared fifth RMS difference,
+plus a quarter of each squared third RMS difference, in cents. Lower is closer.
+This recognises related interval patterns despite a larger difference at one
+note; it retains the size of the differences rather than matching shape alone.
+The interval comparison is independent of tuning reference and treats rotated
+patterns consistently. The list also reports maximum and RMS A-relative note
+differences and separate RMS differences for each interval family.
+**Compare** labels are alternatives, not claimed identities; the nearest
+available examples can still be distant. A suggestion never changes the tuning.
+The 1-cent near-match allowance keeps Trost recognisable after nearest-fraction
+import and Auto closure (up to about 0.53 cents difference in the original position).
+That is reported as a near match, with the actual difference, rather than exact identity.
+The supplied Rousseau variant suggests Ordinaire alongside Schlick and a rotated
+Rameau even though its maximum note difference from Ordinaire is 6.35 cents.
 
 ## Mathematics
 
@@ -200,11 +315,11 @@ The schisma is Pythagorean minus syntonic and has frequency ratio 32805/32768.
 References: [Huygens-Fokker interval ratios](https://www.huygens-fokker.org/docs/intervals.html),
 [comma terminology and logarithmic measures](https://www.huygens-fokker.org/docs/measures.html).
 
-A paired row's fifth is `pure_fifth + syntonic_fraction*S + pythagorean_fraction*P`.
+A row's fifth is `pure_fifth + the formula's physical cent correction`.
 Each clockwise step satisfies `next_deviation - current_deviation = fifth - 700`.
 The circle's total physical correction must equal **-P**. Pythagorean fractions therefore sum to -1;
 syntonic fractions sum to **-P/S**, represented by `-1-H` in syntonic units. Closure tolerance is
 0.000001 cents. Calculations use double precision; chart and CSV alone are rounded to three decimals.
-Automatic closure prefers rational or rational-plus-schisma expressions where possible.
+Exact closure uses symbolic comma coefficients when possible; nonlinear formulas can require a numerical correction.
 
 No audio devices, external assets or network services are required. JUCE retains its own licensing terms.

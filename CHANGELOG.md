@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.5.5 — 2026-09-09
+
+- Two synchronised layouts: compact inputs around the circle and a wide formula
+  list. Both include a cent-deviation bar chart showing notes below/above equal
+  temperament. Larger text and laptop layouts keep the controls readable.
+- Coloured fifth arcs and interconnected major/minor thirds on the circles.
+  Select a note to highlight its intervals; click outside to deselect.
+- Rotate the temperament by one fifth in either direction. Rotation, calculation
+  and closure controls sit beside the circle.
+- One field can combine Pythagorean and syntonic commas and schisma. Generated
+  expressions use readable forms such as `P*3/5` and spell out `schisma`.
+- CSV import offers nearest fractions, including 1/24 and small multiples, or
+  precise simple expressions. Closure can adjust one fifth, selected fifths,
+  every fifth, automatic fields, or prefer simple expressions within a limit.
+- CSV in always preserves the original pasted values for comparison with CSV out.
+- An embedded catalogue of 31 temperaments recognises names and rotations.
+  Suggestions now include related tunings beyond the old 1-cent cutoff, ranked
+  by fifth and third differences. Exact/near matches remain first; alternatives
+  are labelled Compare with their actual differences, not claimed identities.
+- A comprehensive illustrated [user manual](docs/USER_MANUAL.md), refreshed website
+  screenshots and automated builds for all four desktop downloads.
+
+
+Versions 1.5.0–1.5.4 were local development builds, incorporated in this release.
+
 ## 1.4.2 — 2026-09-07
 
 - Prepare GitHub documentation, Windows/Linux build checks and project website.
