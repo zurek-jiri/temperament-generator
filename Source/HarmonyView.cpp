@@ -46,12 +46,10 @@ HarmonyView::HarmonyView()
 {
     for (int i = 0; i < 12; ++i) rootChoice.addItem(temperament::harmonyRootName(i, false), i + 1);
     chordChoice.addItem("Major", 1); chordChoice.addItem("Minor", 2);
-    sensitivity.addItem("Strict: 1 / 4 ct", 1);
-    sensitivity.addItem("Standard: 2 / 6 ct", 2);
-    sensitivity.addItem("Gentle: 4 / 10 ct", 3);
+    sensitivity.addItem("Strict: 2 / 6 ct", 1);
+    sensitivity.addItem("Standard: 4 / 9 ct", 2);
     thirdsSensitivity.addItem("Strict: 5 / 15 ct", 1);
-    thirdsSensitivity.addItem("Standard: 8 / 22 ct", 2);
-    thirdsSensitivity.addItem("Gentle: 12 / 30 ct", 3);
+    thirdsSensitivity.addItem("Standard: 8 / 19 ct", 2);
     rootChoice.setTitle("Chord root"); chordChoice.setTitle("Chord type"); sensitivity.setTitle("Fifth colour sensitivity");
     thirdsSensitivity.setTitle("Major and minor third colour sensitivity");
     for (auto* control : { &sensitivity, &thirdsSensitivity })
@@ -72,14 +70,56 @@ HarmonyView::HarmonyView()
         const bool isMinor = i % 2 != 0;
         button.setButtonText(chordName(note, isMinor));
         button.onClick = [this, note, isMinor] { selectChord(note, isMinor); };
-        addAndMakeVisible(button);
+        chordPanel.addAndMakeVisible(button);
     }
+    chordViewport.setViewedComponent(&chordPanel,false);
+    chordViewport.setScrollBarsShown(true,false);chordViewport.setScrollBarThickness(16);
+    addAndMakeVisible(chordViewport);addAndMakeVisible(playChords);
+    addAndMakeVisible(reverb);addAndMakeVisible(reverbLabel);addAndMakeVisible(audioStatus);
+    addAndMakeVisible(loudness);addAndMakeVisible(loudnessLabel);
+    playChords.setTooltip("Play each selected root-position triad for 2 seconds, including a 70 ms fade-out, using the current temperament and the default output. No microphone input is opened.");
+    reverbLabel.setText("Reverb",juce::dontSendNotification);reverbLabel.setFont(font(22,true));
+    reverbLabel.setColour(juce::Label::textColourId,ink);
+    reverb.setRange(0,4,.1);reverb.setValue(3,juce::dontSendNotification);
+    reverb.setTextValueSuffix(" s");reverb.setTextBoxStyle(juce::Slider::TextBoxRight,false,94,32);
+    reverb.setTitle("Church reverb decay");reverb.setTooltip("Approximate reverb decay, 0 to 4 seconds. Zero is dry. The wet signal is filtered below 200 Hz and above 2500 Hz; the direct sound is unchanged.");
+    reverb.onValueChange=[this] {playback.setReverb(reverb.getValue());};
+    loudnessLabel.setText("Loudness",juce::dontSendNotification);loudnessLabel.setFont(font(22,true));
+    loudnessLabel.setColour(juce::Label::textColourId,ink);
+    loudness.setRange(0,100,1);loudness.setValue(50,juce::dontSendNotification);
+    loudness.setTextValueSuffix("%");loudness.setTextBoxStyle(juce::Slider::TextBoxRight,false,94,32);
+    loudness.setTitle("Chord loudness");loudness.setTooltip("Output level for both the direct chord and reverb: 0% mutes, 100% is full level. Default 50%.");
+    loudness.onValueChange=[this] {playback.setLoudness(loudness.getValue());};
+    audioStatus.setFont(font(22));audioStatus.setColour(juce::Label::textColourId,muted);
+    audioStatus.setText("Principal 8 / playback off",juce::dontSendNotification);
+    playChords.onClick=[this] {
+        if(!playChords.getToggleState())
+        {playback.disable();audioStatus.setText("Principal 8 / playback off",juce::dontSendNotification);return;}
+        const auto error=playback.enable();
+        if(error.isNotEmpty())
+        {
+            playChords.setToggleState(false,juce::dontSendNotification);
+            audioStatus.setText("Audio unavailable",juce::dontSendNotification);audioStatus.setTooltip(error);
+        }
+        else
+        {audioStatus.setText("Principal 8 / 2 s chords",juce::dontSendNotification);audioStatus.setTooltip({});audition();}
+    };
+    playback.onError=[this](const juce::String& error) {
+        playChords.setToggleState(false,juce::dontSendNotification);
+        audioStatus.setText("Audio output disconnected",juce::dontSendNotification);audioStatus.setTooltip(error);
+    };
     rebuildLattice();
     refreshButtons();
+}
+HarmonyView::~HarmonyView() {playback.onError={};playback.disable();chordViewport.setViewedComponent(nullptr,false);}
+void HarmonyView::audition()
+{
+    if(analysis.valid&&playChords.getToggleState()) playback.play(root,minor,tuning);
 }
 
 void HarmonyView::setChart(const std::array<double, 12>& cents, bool valid, const juce::String& source)
 {
+    playback.stop();tuning=cents;
     analysis = valid ? temperament::analyseHarmony(cents) : temperament::HarmonyAnalysis {};
     sourceLabel = source;
     rootChoice.setEnabled(analysis.valid); chordChoice.setEnabled(analysis.valid);
@@ -94,13 +134,14 @@ void HarmonyView::selectChord(int selectedRoot, bool selectedMinor)
     rootChoice.setSelectedId(root + 1, juce::dontSendNotification);
     chordChoice.setSelectedId(minor ? 2 : 1, juce::dontSendNotification);
     rebuildLattice(); refreshButtons(); setTooltip({}); repaint();
+    audition();
 }
 void HarmonyView::updateSensitivity()
 {
-    limits.fifths = sensitivity.getSelectedId() == 1 ? temperament::ColourLimits { 1, 4 }
-                  : sensitivity.getSelectedId() == 3 ? temperament::ColourLimits { 4, 10 } : temperament::ColourLimits { 2, 6 };
+    limits.fifths = sensitivity.getSelectedId() == 1 ? temperament::ColourLimits { 2, 6 }
+                  : temperament::ColourLimits { 4, 9 };
     limits.thirds = thirdsSensitivity.getSelectedId() == 1 ? temperament::ColourLimits { 5, 15 }
-                  : thirdsSensitivity.getSelectedId() == 3 ? temperament::ColourLimits { 12, 30 } : temperament::ColourLimits { 8, 22 };
+                  : temperament::ColourLimits { 8, 19 };
     refreshButtons(); setTooltip({}); repaint();
     if (onColoursChanged) onColoursChanged();
 }
@@ -182,9 +223,22 @@ void HarmonyView::resized()
     rootChoice.setBounds(right,0,width/2-4,36);chordChoice.setBounds(right+width/2+4,0,width/2-4,36);
     sensitivity.setBounds(74,getHeight()-88,left/2-82,34);
     thirdsSensitivity.setBounds(left/2+84,getHeight()-88,left/2-84,34);
-    const int row=juce::jmin(40,(getHeight()-242)/12);
+    const int controlsTop=getHeight()-178;
+    playChords.setBounds(right,controlsTop,width,56);
+    reverbLabel.setBounds(right,controlsTop+59,112,34);
+    reverb.setBounds(right+112,controlsTop+59,width-112,34);
+    loudnessLabel.setBounds(right,controlsTop+101,112,34);
+    loudness.setBounds(right+112,controlsTop+101,width-112,34);
+    for(auto* slider:{&reverb,&loudness})
+        for(auto* child:slider->getChildren()) if(auto* label=dynamic_cast<juce::Label*>(child))
+        {label->setFont(font(22));label->setMinimumHorizontalScale(1.0f);}
+    audioStatus.setBounds(right,controlsTop+145,width,32);
+    chordViewport.setBounds(right,242,width,juce::jmax(80,controlsTop-250));
+    const int row=juce::jlimit(30,40,chordViewport.getHeight()/12);
+    const int panelWidth=width-(row*12>chordViewport.getHeight()?16:0);
+    chordPanel.setSize(panelWidth,row*12);
     for(size_t i=0;i<chordButtons.size();++i)
-        chordButtons[i].setBounds(right+static_cast<int>(i%2)*(width/2+2),242+static_cast<int>(i/2)*row,width/2-4,row-2);
+        chordButtons[i].setBounds(static_cast<int>(i%2)*(panelWidth/2+2),static_cast<int>(i/2)*row,panelWidth/2-4,row-2);
     rebuildLattice();
 }
 void HarmonyView::paint(juce::Graphics& g)

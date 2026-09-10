@@ -32,7 +32,7 @@ needed, and launch from the extracted folder:
 
 ```sh
 sudo apt install libfreetype6 libfontconfig1 libx11-6 libxcomposite1 libxcursor1 \
-  libxext6 libxinerama1 libxrandr2 libxrender1 libgl1 fonts-dejavu-core
+  libxext6 libxinerama1 libxrandr2 libxrender1 libgl1 libasound2t64 fonts-dejavu-core
 ./'Temperament Generator'
 ```
 
@@ -44,7 +44,7 @@ Install a compiler, CMake, Git and the development packages used by JUCE's GUI:
 ```sh
 sudo apt update
 sudo apt install build-essential cmake ninja-build git pkg-config \
-  libfontconfig1-dev libfreetype-dev libx11-dev libxcomposite-dev \
+  libasound2-dev libfontconfig1-dev libfreetype-dev libx11-dev libxcomposite-dev \
   libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
   libgl1-mesa-dev fonts-dejavu-core xvfb xauth
 cmake -S . -B Builds/linux -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -53,8 +53,9 @@ ctest --test-dir Builds/linux --output-on-failure
 './Builds/linux/TemperamentGenerator_artefacts/Release/Temperament Generator'
 ```
 
-The application uses no audio devices or embedded browser, so their optional
-JUCE dependencies are unnecessary. See the [JUCE 8.0.12 Linux dependency list](https://github.com/juce-framework/JUCE/blob/8.0.12/docs/Linux%20Dependencies.md).
+Audio output uses JUCE's native device support (ALSA on Linux). Input channels
+are never opened. FLAC decoding is compiled into the application; MP3, Ogg/Vorbis,
+ASIO and the embedded browser are disabled. See the [JUCE 8.0.12 Linux dependency list](https://github.com/juce-framework/JUCE/blob/8.0.12/docs/Linux%20Dependencies.md).
 
 For a machine without a display, run the GUI checks under Xvfb:
 
@@ -64,6 +65,13 @@ xvfb-run -a './Builds/linux/TemperamentGenerator_artefacts/Release/Temperament G
 
 For desktop validation, also test typing, menus, clipboard, window scaling and
 scrolling in your chosen environment. Offscreen checks do not cover every desktop.
+The `--render-preview` checks also decode every embedded sample and render dry
+and reverberant audio offline, without requiring speakers or a sound device.
+CTest checks pitch conversion, fade timing, filtering, decay and rapid retriggering.
+
+The 25 checked-in FLACs are embedded during a normal build. FFmpeg and the
+maintainer's original WAV directory are unnecessary for compilation or playback.
+`Tools/prepare_samples.py` is only for regenerating FLAC assets from those originals.
 
 ## macOS: Apple Silicon and Intel
 

@@ -3,6 +3,7 @@
 // See LICENSE and COPYRIGHT for terms and the no-warranty notice.
 
 #include "MainComponent.h"
+bool checkEmbeddedAudio(const juce::File&);
 #include "AppIcon.h"
 
 class ReadableContent final : public juce::Component
@@ -36,9 +37,28 @@ public:
     void initialise(const juce::String& commandLine) override
     {
         const auto args = juce::StringArray::fromTokens(commandLine, true);
+        if(args.size()==2&&args[0]=="--check-default-audio")
+        {
+            const auto directory=juce::File(args[1].unquoted());directory.createDirectory();
+            audioCheck=std::make_unique<ChordPlayback>();
+            const auto error=audioCheck->enable();
+            if(error.isNotEmpty())
+            {directory.getChildFile("default-audio-check.txt").replaceWithText(error);setApplicationReturnValue(1);quit();return;}
+            audioCheck->play(0,false,{});
+            juce::Timer::callAfterDelay(2400,[this,directory] {
+                const bool ok=audioCheck->renderedFrames()>16000&&audioCheck->outputPeak()>.0001f&&audioCheck->inputIsClosed();
+                directory.getChildFile("default-audio-check.txt").replaceWithText((ok?"PASS: ":"FAIL: ")+audioCheck->deviceDescription()
+                    +"; rendered frames "+juce::String(static_cast<juce::int64>(audioCheck->renderedFrames()))
+                    +"; peak "+juce::String(audioCheck->outputPeak(),6)+"; input channels closed: "+(audioCheck->inputIsClosed()?"yes":"no"));
+                audioCheck.reset();setApplicationReturnValue(ok?0:1);quit();
+            });
+            return;
+        }
         if (args.size() == 2 && args[0] == "--render-preview")
         {
             const auto directory = juce::File(args[1].unquoted());
+            directory.createDirectory();
+            if(!checkEmbeddedAudio(directory)) {setApplicationReturnValue(1);quit();return;}
             MainComponent preview;
             bool success = preview.renderPreviews(directory);
             if (success)
@@ -62,7 +82,7 @@ public:
         }
         window = std::make_unique<Window>(getApplicationName());
     }
-    void shutdown() override { window.reset(); }
+    void shutdown() override { audioCheck.reset();window.reset(); }
     void systemRequestedQuit() override { quit(); }
 private:
     class Window final : public juce::DocumentWindow
@@ -84,6 +104,7 @@ private:
         void closeButtonPressed() override { juce::JUCEApplication::getInstance()->systemRequestedQuit(); }
     };
     std::unique_ptr<Window> window;
+    std::unique_ptr<ChordPlayback> audioCheck;
 };
 
 START_JUCE_APPLICATION(TemperamentApplication)

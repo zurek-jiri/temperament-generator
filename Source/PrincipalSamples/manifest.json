@@ -1,0 +1,327 @@
+[
+  {
+    "note": 48,
+    "original": "048-C.wav",
+    "file": "note048.flac",
+    "sampleRate": 48000,
+    "frames": 372828,
+    "loop": [
+      127991,
+      325724
+    ],
+    "pcmSha256": "a346f85e386b08e77e6cd8a187627bc9bda97ede7a9fd0e6fbe2dc7e903a47e0",
+    "flacSha256": "7c4208485fa4a82f6f5f0a94addfe43df4df5655745326243636c4920bfe55da"
+  },
+  {
+    "note": 49,
+    "original": "049-C#.wav",
+    "file": "note049.flac",
+    "sampleRate": 48000,
+    "frames": 341667,
+    "loop": [
+      106363,
+      316890
+    ],
+    "pcmSha256": "101c353ba03831712ba6a7ff1c79a30a3b3ffeaebbe0523500942da465b01722",
+    "flacSha256": "b72e7b378798381128e27eb6e8c886d61d123b9c13a801937fde1b39c38c4988"
+  },
+  {
+    "note": 50,
+    "original": "050-D.wav",
+    "file": "note050.flac",
+    "sampleRate": 48000,
+    "frames": 413920,
+    "loop": [
+      109076,
+      357465
+    ],
+    "pcmSha256": "e52df327cc36d064914685a24a6569779f08f50c68197f8ab439a59cbd093c69",
+    "flacSha256": "45766099ca0748c3891715e25c2299495cff1ee5ef57a72b136d3abce2a3d94f"
+  },
+  {
+    "note": 51,
+    "original": "051-D#.wav",
+    "file": "note051.flac",
+    "sampleRate": 48000,
+    "frames": 318788,
+    "loop": [
+      90238,
+      245714
+    ],
+    "pcmSha256": "dc7bdd1346d7c065fb2f46f78ddfa0baf9b8ac438cd47bfa035430ebc84bcb85",
+    "flacSha256": "7078bd29be819af18e7cb5195d90d1fe5faebaceb4451030c2a44a18da53abbd"
+  },
+  {
+    "note": 52,
+    "original": "052-E.wav",
+    "file": "note052.flac",
+    "sampleRate": 48000,
+    "frames": 350238,
+    "loop": [
+      171203,
+      333676
+    ],
+    "pcmSha256": "fa1d82d3de0d9bb0ff2e046d2e11b3ee55ee5ffa3873e5b7ac4455d49a6e13d0",
+    "flacSha256": "ca99a55142d09aaed9a9f97a682be5e0b67aee4c36d18a49da005d3ab48ceaf8"
+  },
+  {
+    "note": 53,
+    "original": "053-F.wav",
+    "file": "note053.flac",
+    "sampleRate": 48000,
+    "frames": 326269,
+    "loop": [
+      60149,
+      251704
+    ],
+    "pcmSha256": "5cfc1b2ccbca19876602ef3529d24f3130032135c3b8459f327b9efd0cadc573",
+    "flacSha256": "4b8b1636c2b281b1ce7245126b1d89b50c46bdb35a933e48a7e8f873895348e0"
+  },
+  {
+    "note": 54,
+    "original": "054-F#.wav",
+    "file": "note054.flac",
+    "sampleRate": 48000,
+    "frames": 364247,
+    "loop": [
+      75719,
+      316445
+    ],
+    "pcmSha256": "fcbf9f39b695fdf0ea335702765b7387fab35031987307145435bccdb6feb9a8",
+    "flacSha256": "2cba23387c7e7ff8204fffa51e75fcb40ebc1e18cba76b15c87fbe320f42241e"
+  },
+  {
+    "note": 55,
+    "original": "055-G.wav",
+    "file": "note055.flac",
+    "sampleRate": 48000,
+    "frames": 301146,
+    "loop": [
+      70124,
+      286077
+    ],
+    "pcmSha256": "9a087baaa42c931f94c93eb52cfe5d728bde01c0828338b8c5980fa6235839cd",
+    "flacSha256": "b28a08f9ee85e9013138a74f59257487fcec70f11c8304617a3ea4c64befb045"
+  },
+  {
+    "note": 56,
+    "original": "056-G#.wav",
+    "file": "note056.flac",
+    "sampleRate": 48000,
+    "frames": 351783,
+    "loop": [
+      134561,
+      312972
+    ],
+    "pcmSha256": "1e7dd9c1d4360d356f1de605dfd25f50d58090de02da105336fe61fcf8fd9cf8",
+    "flacSha256": "6d120d6883674c06b861a21bb7c5f864de64ecdfa9e6d94201da87397cfba18f"
+  },
+  {
+    "note": 57,
+    "original": "057-A.wav",
+    "file": "note057.flac",
+    "sampleRate": 48000,
+    "frames": 377860,
+    "loop": [
+      147285,
+      355819
+    ],
+    "pcmSha256": "ebbed3119edf51fbe13894f192aa063970ef5a8d95746a0d870687a35387bd90",
+    "flacSha256": "3988a6bb7d37f59f054de78068089893b21cf759a741bbc7f96f7e1ddc4bc015"
+  },
+  {
+    "note": 58,
+    "original": "058-A#.wav",
+    "file": "note058.flac",
+    "sampleRate": 48000,
+    "frames": 370784,
+    "loop": [
+      181840,
+      356022
+    ],
+    "pcmSha256": "ea46fd203cdeadf6f2338976affac22aeb312e3901bd77994711d4853d37ab03",
+    "flacSha256": "6afb0e067115063c015026201caeb4b5ad77d83cb37bfe6de47023fe25d6e03f"
+  },
+  {
+    "note": 59,
+    "original": "059-B.wav",
+    "file": "note059.flac",
+    "sampleRate": 48000,
+    "frames": 308028,
+    "loop": [
+      134495,
+      274609
+    ],
+    "pcmSha256": "4582cd79c38742d7f827492b400bb4c3c92df77ce69f64b84d112fa884cbc4d3",
+    "flacSha256": "690348cd123118a8daf0f2904e1183a778de7c1481dd1d948e10b905ce90dfd8"
+  },
+  {
+    "note": 60,
+    "original": "060-C.wav",
+    "file": "note060.flac",
+    "sampleRate": 48000,
+    "frames": 351318,
+    "loop": [
+      112507,
+      289513
+    ],
+    "pcmSha256": "f1c57134fd971000a340644023b4ff7697526b696ba0ce7122baccadf70b5c2e",
+    "flacSha256": "eb06002893124471c3dc52184036b9cc08e509a6e5927f5f9a4ed6ea730b91a1"
+  },
+  {
+    "note": 61,
+    "original": "061-C#.wav",
+    "file": "note061.flac",
+    "sampleRate": 48000,
+    "frames": 383130,
+    "loop": [
+      167459,
+      343360
+    ],
+    "pcmSha256": "2c93edf82ad015043e28ed57d4a180756ca1eabdad1dd31e4a5a6022311ae7eb",
+    "flacSha256": "d7c58ca49a7feb69b9fc80eb6eba7eea390ba18bdb1bc4276f202d3684279c78"
+  },
+  {
+    "note": 62,
+    "original": "062-D.wav",
+    "file": "note062.flac",
+    "sampleRate": 48000,
+    "frames": 362684,
+    "loop": [
+      168641,
+      325028
+    ],
+    "pcmSha256": "cabedfef74eea3184df074bb76c1aa5821a6f63523df28022f955e7ae327aebe",
+    "flacSha256": "f66e14c936ad22f1374d85458e2d47fc1d2f4d9d96f83a117200bb92fc8fe56e"
+  },
+  {
+    "note": 63,
+    "original": "063-D#.wav",
+    "file": "note063.flac",
+    "sampleRate": 48000,
+    "frames": 493227,
+    "loop": [
+      90979,
+      329900
+    ],
+    "pcmSha256": "909b907a2135f497be980f54ada295dc2a2875cf7fd3ef72a1a770087dd8e0cb",
+    "flacSha256": "ef14e46e30c332c973c2833d705294c837c8b2a290a5805f855f6f707a59c5cc"
+  },
+  {
+    "note": 64,
+    "original": "064-E.wav",
+    "file": "note064.flac",
+    "sampleRate": 48000,
+    "frames": 378667,
+    "loop": [
+      83011,
+      295711
+    ],
+    "pcmSha256": "d3c86eaca67c4269d9c925ac59febbb81b866a15df6ac24f763b094dcede5367",
+    "flacSha256": "a9e79256ccb734122daa9728e9fbff7397e52ced1e50f62a5d2c130f05a8a18c"
+  },
+  {
+    "note": 65,
+    "original": "065-F.wav",
+    "file": "note065.flac",
+    "sampleRate": 48000,
+    "frames": 386603,
+    "loop": [
+      102245,
+      356461
+    ],
+    "pcmSha256": "0c12f072eb3a6046d18c61968e9d7fec75e8fe5fe9108d6bee28815270cc2e8b",
+    "flacSha256": "35ef0bcbca978eb0e4592b93d22417473db943e199ac6e6d488df853764fc6f5"
+  },
+  {
+    "note": 66,
+    "original": "066-F#.wav",
+    "file": "note066.flac",
+    "sampleRate": 48000,
+    "frames": 371299,
+    "loop": [
+      121526,
+      340592
+    ],
+    "pcmSha256": "9b49294fe3f6b159e37db783704adb89028264e00287b304cb0b9e441306bc3f",
+    "flacSha256": "11cda54b34bf23d977c87223b787e1ef8c41fcedcd3c560ab89836aa3ee4ef6a"
+  },
+  {
+    "note": 67,
+    "original": "067-G.wav",
+    "file": "note067.flac",
+    "sampleRate": 48000,
+    "frames": 374430,
+    "loop": [
+      75645,
+      239446
+    ],
+    "pcmSha256": "a1cf64d73484269c02f3a1bf8acd5c3f65f609079e4c2f25f768cdbbacf3be85",
+    "flacSha256": "8888fc4cc66c974e9ce3f07b95b1c3075e1a8282986f8c94dbb25cc816d91f06"
+  },
+  {
+    "note": 68,
+    "original": "068-G#.wav",
+    "file": "note068.flac",
+    "sampleRate": 48000,
+    "frames": 360223,
+    "loop": [
+      66312,
+      298223
+    ],
+    "pcmSha256": "bb3f098a42487d394cb57d5768ebf6aac7691ff55ff7dbfc9bdb42e97d15aa29",
+    "flacSha256": "b5209dd3e65badcc29d75ac0d6444e3daf729a7c3f0d7c531095bb04e98de5a3"
+  },
+  {
+    "note": 69,
+    "original": "069-A.wav",
+    "file": "note069.flac",
+    "sampleRate": 48000,
+    "frames": 372360,
+    "loop": [
+      147685,
+      340404
+    ],
+    "pcmSha256": "840d156084e3e1adae2ed38f03d6d96f4f075b8f4f4b6a983b901642afe3c7ec",
+    "flacSha256": "0531c2e23a6b64e8dbca81ae07651e631a04f8d8856c519c7f99f4aa321c78be"
+  },
+  {
+    "note": 70,
+    "original": "070-A#.wav",
+    "file": "note070.flac",
+    "sampleRate": 48000,
+    "frames": 412574,
+    "loop": [
+      180137,
+      372643
+    ],
+    "pcmSha256": "0240bd18fc4cc00351c7ef38d97c3304459565b840cc0fb99f9c7bcb85323e00",
+    "flacSha256": "43099ee36dcefc44372c8a5165106e71bdb511e92be8f6056315e40e14b6ee45"
+  },
+  {
+    "note": 71,
+    "original": "071-B.wav",
+    "file": "note071.flac",
+    "sampleRate": 48000,
+    "frames": 351503,
+    "loop": [
+      94770,
+      313103
+    ],
+    "pcmSha256": "096a0d65bfd3ee0f4dcdf1055ae4a2e6191101bb2f8ba32528810b0945dc203c",
+    "flacSha256": "2812ad8cf01b456b83c8f5da1dd8da93197257dfab3c54dc3617130179471cbd"
+  },
+  {
+    "note": 72,
+    "original": "072-C.wav",
+    "file": "note072.flac",
+    "sampleRate": 48000,
+    "frames": 366459,
+    "loop": [
+      86365,
+      258235
+    ],
+    "pcmSha256": "019a06379b57711b4019321d4afcf8ad0de4298e9ca1d5b371d1ca636c0dd30d",
+    "flacSha256": "91c27cadc842dafd7b660c12f3b9ea8b976f5fc2606fba83bcf8b55838651cc9"
+  }
+]

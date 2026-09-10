@@ -387,7 +387,7 @@ int main()
             check(latticeNote(q + 1, r - 1, -3) == (originNote + 3) % 12, "Down-right lattice edges are minor thirds");
         }
     auto sensitiveChord = harmonyEt.triads[0];
-    sensitiveChord.intervals[0].errorCents = 7;
+    sensitiveChord.intervals[0].errorCents = 9.5;
     sensitiveChord.intervals[1].errorCents = 12;
     sensitiveChord.intervals[2].errorCents = 0;
     sensitiveChord.worstError = 12;
@@ -399,11 +399,20 @@ int main()
     check(consonance(sensitiveChord) == consonance(sensitiveChord, independentLimits), "Relaxing thirds cannot hide a rough fifth");
     independentLimits.fifths = { 4, 10 };
     check(consonance(sensitiveChord, independentLimits) == Consonance::tempered, "Fifth sensitivity controls the limiting fifth independently");
-    sensitiveChord.intervals[0].errorCents = 2;
+    sensitiveChord.intervals[0].errorCents = 4;
     sensitiveChord.intervals[1].errorCents = 8;
     check(consonance(sensitiveChord) == Consonance::good, "Each interval type includes its own green boundary");
-    sensitiveChord.intervals[0].errorCents = -2.001;
+    sensitiveChord.intervals[0].errorCents = -4.001;
     check(consonance(sensitiveChord) == Consonance::tempered, "Small excess over the fifth boundary makes the chord orange");
+    for (const auto kind : { HarmonyInterval::majorThird, HarmonyInterval::minorThird })
+        for (double sign : { -1.0, 1.0 })
+        {
+            IntervalAnalysis third; third.kind = kind;
+            third.errorCents = sign * 19;
+            check(consonance(third) == Consonance::tempered, "Standard thirds include the 19-cent orange boundary");
+            third.errorCents = sign * 21;
+            check(consonance(third) == Consonance::rough, "Thirds 21 cents sharp or flat are red");
+        }
     const auto aMajorNames = harmonyNoteNames(9, false);
     check(aMajorNames[9] == "A" && aMajorNames[1] == "C#" && aMajorNames[4] == "E", "A major is spelled A C# E");
     const auto bbMinorNames = harmonyNoteNames(10, true);

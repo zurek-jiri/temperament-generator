@@ -15,12 +15,14 @@ source archive includes the exact JUCE source used to build the executable.
 | Independent JPEG Group | Included in JUCE 8.0.12 | [README and license](Licenses/Independent-JPEG-Group-README.txt) |
 | libpng | Included in JUCE 8.0.12 | [license](Licenses/libpng-LICENSE.txt) |
 | zlib | Included in JUCE 8.0.12 | [license](Licenses/zlib-LICENSE.txt) |
+| libFLAC | Included in JUCE 8.0.12 | BSD-style [license and notices](Licenses/FLAC-LICENSE.txt) |
 
 **This software is based in part on the work of the Independent JPEG Group.**
 
 JUCE contains other libraries for optional modules. This application links its
-GUI, graphics, events, core and data-structure modules; audio and plugin-hosting
-modules are not linked and the embedded browser is disabled. Preserve original
+GUI, graphics, events, core, data-structure, audio-basics, audio-device and
+audio-format modules. Plugin hosting, Ogg/Vorbis, MP3 decoding and the embedded
+browser are disabled. FLAC decoding uses JUCE's included library. Preserve original
 notices throughout redistributed JUCE source. System fonts and operating system
 libraries are used from the user's machine and are not bundled as assets.
 
@@ -36,3 +38,13 @@ is not used at runtime and is excluded from the public repository and releases.
 
 The website uses local assets, system fonts and plain HTML/CSS/JavaScript.
 Its original code, content and artwork use the project's AGPLv3 license.
+
+## Principal 8 recordings
+
+The project maintainer supplied the Principal8 recordings for inclusion and
+distribution in this application. The 25 primary notes are stored losslessly in
+`Source/PrincipalSamples/` and embedded in the executable. They follow the
+project's AGPL-3.0-only licence. Their original filenames, PCM hashes and loop
+metadata are preserved in the manifest. The alternate `069-A_a.wav` recording
+is not used. FFmpeg is used only to prepare these assets; its executable and
+libraries are not linked or distributed with this program.

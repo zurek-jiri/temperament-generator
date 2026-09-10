@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.6.0 — 2026-09-10
+
+- Set Standard purity limits to 4/9 ct for fifths and 8/19 ct for thirds;
+  Strict fifths use 2/6 ct. Remove Gentle from both menus. Circles and lattice
+  share these limits, and thirds 21 cents sharp or flat are now red.
+- Play root-position chords from Harmony lattice through the default audio
+  output. Each lasts two seconds and ends with a 70 ms fade-out; rapid selections
+  release the preceding notes while starting the new chord.
+- Embed 25 lossless Principal 8 recordings, MIDI 48–72, with their original
+  24-bit/48 kHz PCM and loop metadata. Repitch samples on the fly using the current
+  temperament's A-relative cent values. No separate sample directory is needed.
+- Add a 0–4 second stereo church-style reverb, with its wet signal filtered
+  below 200 Hz and above 2500 Hz, defaulting to three seconds. The direct sound remains unfiltered.
+- Add a smoothly adjustable loudness slider, defaulting to 50%, for both the chord and reverb.
+- Keep the audio checkbox and both sliders visible at the lower right. On small
+  windows the chord-button list scrolls. Playback starts off; inputs and microphone
+  access are never opened. Leaving the lattice or invalidating a chart stops playback.
+- Enable JUCE audio-device and FLAC-format support, preserve FLAC notices, and
+  add native and offline audio validation to Windows x64, macOS and Linux builds.
+- Update the illustrated manual, implementation notes and website screenshots.
+
 ## 1.5.5 — 2026-09-09
 
 - Two synchronised layouts: compact inputs around the circle and a wide formula

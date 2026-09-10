@@ -78,7 +78,11 @@ void StudioLookAndFeel::drawToggleButton(juce::Graphics& g,juce::ToggleButton& b
     const float tick=juce::jmin(30.0f,button.getHeight()-6.0f);
     drawTickBox(g,button,2,(button.getHeight()-tick)*0.5f,tick,tick,button.getToggleState(),button.isEnabled(),highlighted,down);
     g.setFont(font(24));g.setColour(button.isEnabled()?ink:muted.withAlpha(0.6f));
-    g.drawText(button.getButtonText(),40,0,button.getWidth()-42,button.getHeight(),juce::Justification::centredLeft);
+    g.drawFittedText(button.getButtonText(),40,0,button.getWidth()-42,button.getHeight(),juce::Justification::centredLeft,button.getHeight()>44?2:1,1.0f);
+}
+juce::Label* StudioLookAndFeel::createSliderTextBox(juce::Slider& slider)
+{
+    auto* label=juce::LookAndFeel_V4::createSliderTextBox(slider);label->setFont(font(22));return label;
 }
 void StudioLookAndFeel::positionComboBoxText(juce::ComboBox& box, juce::Label& label)
 {
@@ -945,7 +949,7 @@ bool MainComponent::renderPreviews(const juce::File& directory)
     harmony.selectChord(10,true);
     if(harmony.displayedNoteName(1)!="Db"||!save("harmony-bb-minor.png")) return failed(__LINE__);
     harmony.sensitivityControl().setSelectedId(1,juce::sendNotificationSync);
-    harmony.thirdsSensitivityControl().setSelectedId(3,juce::sendNotificationSync);
+    harmony.thirdsSensitivityControl().setSelectedId(1,juce::sendNotificationSync);
     setMode(temperament::Mode::pythagoreanFifths);setPreset(true);
     reconstruction.setSelectedId(1,juce::dontSendNotification);
     harmony.sensitivityControl().setSelectedId(2,juce::sendNotificationSync);

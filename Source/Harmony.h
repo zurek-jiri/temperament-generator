@@ -16,8 +16,8 @@ const std::array<CircleConnection,36>& fifthCircleConnections();
 struct ColourLimits { double good = 6, tempered = 18; };
 struct HarmonyColourLimits
 {
-    ColourLimits fifths { 2, 6 };
-    ColourLimits thirds { 8, 22 };
+    ColourLimits fifths { 4, 9 };
+    ColourLimits thirds { 8, 19 };
 };
 struct IntervalAnalysis
 {

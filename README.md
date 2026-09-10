@@ -1,4 +1,4 @@
-# Temperament Generator 1.5.5
+# Temperament Generator 1.6.0
 
 Desktop tools for designing twelve-note temperaments, converting comma corrections
 to tuning charts, and exploring fifths and thirds in a harmony lattice.
@@ -151,20 +151,18 @@ Fifths and thirds have **independent sensitivity controls**. Fifths use stricter
 
 | Intervals | Sensitivity | Green: good | Orange: tempered | Red: rough |
 | --- | --- | --- | --- | --- |
-| Fifths | Strict | Up to 1 ct | Above 1, up to 4 ct | Above 4 ct |
-| Fifths | Standard | Up to 2 ct | Above 2, up to 6 ct | Above 6 ct |
-| Fifths | Gentle | Up to 4 ct | Above 4, up to 10 ct | Above 10 ct |
+| Fifths | Strict | Up to 2 ct | Above 2, up to 6 ct | Above 6 ct |
+| Fifths | Standard | Up to 4 ct | Above 4, up to 9 ct | Above 9 ct |
 | Both thirds | Strict | Up to 5 ct | Above 5, up to 15 ct | Above 15 ct |
-| Both thirds | Standard | Up to 8 ct | Above 8, up to 22 ct | Above 22 ct |
-| Both thirds | Gentle | Up to 12 ct | Above 12, up to 30 ct | Above 30 ct |
+| Both thirds | Standard | Up to 8 ct | Above 8, up to 19 ct | Above 19 ct |
 
 These thresholds are adjustable visual conventions, not universal hearing thresholds. Timbre,
 register and voicing also influence perceived roughness. The triangle tint and chord button use
 the **worst interval rating under its own limits**: a red fifth keeps a chord red even if a larger
 third deviation is only orange. Tooltips also report the largest absolute cent error.
 For example, equal temperament has green fifths and orange thirds with Standard sensitivity.
-both `-schisma` (about -1.953721 ct) and `-P/12` (about -1.955001 ct) are inside
-the inclusive 2-cent green fifth limit.
+Both `-schisma` (about -1.953721 ct) and `-P/12` (about -1.955001 ct) are green
+with either fifth setting, including the inclusive 2-cent Strict limit.
 Quarter-comma meantone shows pure major thirds in its favourable keys and red wolf intervals.
 
 The view uses the calculated chart or the original imported CSV values, as labelled above the lattice.
@@ -177,6 +175,28 @@ The interval calculation is `100*semitones + deviation[to] - deviation[from]`, w
 pitch class wrapped modulo 12, compared to `1200*log2(pure_ratio)`.
 Background: [Tonnetz triads](https://archive.bridgesmathart.org/2006/bridges2006-261.pdf) and
 [temperament comparison by fifth/third detuning](https://www.huygens-fokker.org/microtonality/temperament.html).
+
+## Hearing the chords
+
+On **Harmony lattice**, enable **Play Chords into Default Audio Output**.
+The selected triad plays immediately; selecting a chord, a lattice triangle or
+a root plays another two-second root-position triad, ending with a 70 ms fade-out.
+The 25 supplied Principal 8 samples (MIDI 48–72, A=440 equal temperament) are
+embedded as lossless 24-bit FLAC and repitched by the current chart's cent values.
+No external samples, codecs, microphone or audio input are required.
+
+Set **Loudness** from 0 to 100% (default **50%**) to adjust the chord and its reverb
+together. Set **Reverb** from 0 to 4 seconds (default **3 seconds**) for dry sound
+or a longer church-like decay.
+The reverb's wet signal is filtered below 200 Hz and above 2500 Hz; the direct
+sound remains unfiltered. Reverb tails may continue after the chord ends.
+Rapid selections fade the old notes while starting the new chord. Changed or
+invalid charts and leaving the lattice stop the old audition. Playback starts
+off and opens only the default output when enabled; disable/re-enable to pick
+up a changed system default device. Small windows scroll the chord-button list
+while retaining the audio controls at the lower right.
+
+See the [manual](docs/USER_MANUAL.md) and [audio implementation notes](docs/AUDIO.md).
 
 ## Expressions and schisma
 
@@ -322,4 +342,5 @@ syntonic fractions sum to **-P/S**, represented by `-1-H` in syntonic units. Clo
 0.000001 cents. Calculations use double precision; chart and CSV alone are rounded to three decimals.
 Exact closure uses symbolic comma coefficients when possible; nonlinear formulas can require a numerical correction.
 
-No audio devices, external assets or network services are required. JUCE retains its own licensing terms.
+The calculator works without an audio device; optional audition needs an output.
+No external sample assets or network services are required. JUCE retains its own licensing terms.

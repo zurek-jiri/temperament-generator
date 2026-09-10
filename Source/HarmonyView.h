@@ -5,11 +5,13 @@
 #pragma once
 #include <juce_gui_extra/juce_gui_extra.h>
 #include "Harmony.h"
+#include "ChordPlayback.h"
 
 class HarmonyView final : public juce::Component, public juce::SettableTooltipClient
 {
 public:
     HarmonyView();
+    ~HarmonyView() override;
     void setChart(const std::array<double, 12>&, bool valid, const juce::String& source);
     void selectChord(int root, bool minor);
     bool selectAt(juce::Point<float>);
@@ -26,6 +28,7 @@ public:
     void mouseMove(const juce::MouseEvent&) override;
     void mouseExit(const juce::MouseEvent&) override { setTooltip({}); }
     void mouseDown(const juce::MouseEvent& e) override { selectAt(e.position); }
+    void visibilityChanged() override { if(!isVisible()) playback.stop(); }
 private:
     struct Node { int q, r, note; juce::Point<float> point; };
     struct Edge { size_t from, to; temperament::HarmonyInterval kind; };
@@ -36,6 +39,15 @@ private:
     juce::String sourceLabel;
     juce::ComboBox rootChoice, chordChoice, sensitivity, thirdsSensitivity;
     std::array<juce::TextButton, 24> chordButtons;
+    juce::Component chordPanel;
+    juce::Viewport chordViewport;
+    juce::ToggleButton playChords { "Play Chords into Default Audio Output" };
+    juce::Slider reverb { juce::Slider::LinearHorizontal,juce::Slider::TextBoxRight };
+    juce::Slider loudness { juce::Slider::LinearHorizontal,juce::Slider::TextBoxRight };
+    juce::Label reverbLabel,loudnessLabel,audioStatus;
+    ChordPlayback playback;
+    std::array<double,12> tuning {};
+    void audition();
     std::vector<Node> nodes;
     std::vector<Edge> edges;
     std::vector<Face> faces;

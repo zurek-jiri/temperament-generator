@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(TemperamentGenerator VERSION 1.5.5 LANGUAGES C CXX)
+project(TemperamentGenerator VERSION 1.6.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,6 +16,11 @@ if(MSVC)
 endif()
 
 include(CTest)
+add_library(chord_renderer Source/ChordRenderer.cpp)
+target_include_directories(chord_renderer PUBLIC Source)
+if(MSVC)
+    target_compile_options(chord_renderer PUBLIC /EHsc)
+endif()
 if(BUILD_TESTING)
     add_executable(TemperamentTests Tests/TemperamentTests.cpp)
     target_link_libraries(TemperamentTests PRIVATE temperament_core)
@@ -23,6 +28,9 @@ if(BUILD_TESTING)
     add_executable(ReconstructionTests Tests/ReconstructionTests.cpp)
     target_link_libraries(ReconstructionTests PRIVATE temperament_core)
     add_test(NAME ReconstructionAndClosure COMMAND ReconstructionTests)
+    add_executable(ChordRendererTests Tests/ChordRendererTests.cpp)
+    target_link_libraries(ChordRendererTests PRIVATE chord_renderer)
+    add_test(NAME SampledChordRendering COMMAND ChordRendererTests)
 endif()
 
 option(BUILD_GUI "Build the JUCE desktop application" ON)
@@ -39,6 +47,8 @@ if(BUILD_GUI)
     endif()
     juce_add_binary_data(TemperamentAssets HEADER_NAME AppAssets.h NAMESPACE AppAssets
         SOURCES Source/TuningFork.svg)
+    file(GLOB PRINCIPAL_SAMPLES CONFIGURE_DEPENDS Source/PrincipalSamples/note*.flac)
+    juce_add_binary_data(PrincipalAssets HEADER_NAME PrincipalData.h NAMESPACE PrincipalData SOURCES ${PRINCIPAL_SAMPLES})
     juce_add_binary_data(TemperamentLegal HEADER_NAME AppLegal.h NAMESPACE AppLegal
         SOURCES LICENSE Licenses/About.txt Licenses/ThirdPartyNotices.txt)
     juce_add_gui_app(TemperamentGenerator
@@ -47,10 +57,11 @@ if(BUILD_GUI)
         ICON_BIG "Source/TuningFork.svg"
         ICON_SMALL "Source/TuningFork.svg"
         BUNDLE_ID "io.github.zurek-jiri.temperament-generator")
-    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/CentDeviationView.cpp Source/HarmonyView.cpp Source/ClosingPanel.cpp)
+    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/CentDeviationView.cpp Source/HarmonyView.cpp Source/ClosingPanel.cpp Source/ChordPlayback.cpp Source/AudioChecks.cpp)
     target_compile_definitions(TemperamentGenerator PRIVATE
-        JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:TemperamentGenerator,JUCE_PRODUCT_NAME>"
+        JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_USE_OGGVORBIS=0 JUCE_USE_MP3AUDIOFORMAT=0 JUCE_ASIO=0
+        JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:TemperamentGenerator,JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="${PROJECT_VERSION}")
-    target_link_libraries(TemperamentGenerator PRIVATE temperament_core TemperamentAssets TemperamentLegal juce::juce_gui_extra
+    target_link_libraries(TemperamentGenerator PRIVATE temperament_core chord_renderer PrincipalAssets TemperamentAssets TemperamentLegal juce::juce_gui_extra juce::juce_audio_devices juce::juce_audio_formats
         juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 endif()

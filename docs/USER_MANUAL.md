@@ -6,8 +6,8 @@ thirds combine in chords. It is intended for people who want to experiment with
 temperaments by ear and by eye: a formula tells you how a fifth was made, while
 the chart tells you where the notes ended up.
 
-The program does not play sound. It calculates tuning relationships and shows
-their consequences. The word “good” in the colour system means “close to the
+The Harmony lattice can play Principal 8 chords in your current temperament,
+with optional church-style reverb. The word “good” in the colour system means “close to the
 chosen pure ratio”; it is a useful visual guide, not a claim about every
 instrument, register, voicing, or listener.
 
@@ -339,6 +339,54 @@ Chromatic spellings follow context where possible. A major uses C#, while Bb
 minor uses Db. Enharmonic spelling changes the label only; it does not change the
 tuned pitch class.
 
+### Playing chords
+
+At the bottom right, enable **Play Chords into Default Audio Output**. The
+currently selected chord plays immediately. Then click a chord button or a
+triangle in the lattice, select a note, or change the root/Major/Minor controls
+to hear another chord. Clicking the same chord button again repeats it.
+
+Each selection plays a root-position triad for **two seconds**, including a
+**70 ms fade-out** at the end. A short attack prevents clicks. When changing
+chords quickly, the previous notes fade out while the new chord begins.
+
+The instrument is the supplied **Principal 8** organ stop. Its 25 recordings
+cover MIDI notes 48–72 and were supplied in equal temperament at A = 440 Hz.
+The app repitches each note continuously by its current cent deviation: positive
+values sharpen it, negative values flatten it, and A retains its reference pitch.
+The root is placed in MIDI 48–59; the third and fifth sit above it. Enharmonic
+spellings do not change the sound.
+
+Playback follows the **current chart**. Immediately after CSV import, it uses
+the imported A-normalised values, even if rounded formulas do not close yet.
+After a successful calculation, it uses the calculated tuning. Editing or
+invalidating a chart stops the previous audition; select a chord again after
+calculating. Leaving the lattice stops its audition. Unchecking playback closes
+the audio device. Colour-sensitivity controls change the display, not the tuning.
+
+**Loudness** ranges from **0 to 100%**, starting at **50%**. It adjusts both the
+direct chord and its reverb tail. Zero mutes the playback; changes are smoothed
+to avoid clicks. Drag the slider or type a percentage in its value box.
+
+**Reverb** starts at **3.0 seconds** and ranges from **0.0 to 4.0 seconds**;
+you can drag the slider or type
+the time. Zero gives the direct, dry organ sound. Higher settings lengthen the
+approximate decay of the room, and a soft tail continues after the two-second
+chord ends. Only the reverb is filtered below **200 Hz** and above **2,500 Hz**,
+giving a darker, church-like ambience. The direct sound keeps its original
+frequency content. Use dry playback when listening closely to beating; add
+reverb to hear how the chords blend in a room.
+
+The checkbox starts off. Audio goes to the operating system's default output;
+set its destination and volume in your system settings. If you change the default
+device while the app is running, uncheck and recheck playback to reopen it. The
+application never opens audio inputs, records sound, or asks for a microphone.
+The recordings are embedded as lossless FLAC; no separate sample directory,
+codec installation, or network connection is needed.
+
+On a small screen the chord-button list scrolls, keeping the audio checkbox and
+sliders visible. The lattice and root/type selectors remain available as well.
+
 ### Purity colours and sensitivity
 
 Green means close to pure, orange means tempered, and red means rough according
@@ -348,16 +396,15 @@ moderate third adjustments.
 
 | Interval | Sensitivity | Green | Orange | Red |
 | --- | --- | --- | --- | --- |
-| Fifths | Strict | up to 1 ct | 1–4 ct | above 4 ct |
-| Fifths | Standard | up to 2 ct | 2–6 ct | above 6 ct |
-| Fifths | Gentle | up to 4 ct | 4–10 ct | above 10 ct |
+| Fifths | Strict | up to 2 ct | 2–6 ct | above 6 ct |
+| Fifths | Standard | up to 4 ct | 4–9 ct | above 9 ct |
 | Major/minor thirds | Strict | up to 5 ct | 5–15 ct | above 15 ct |
-| Major/minor thirds | Standard | up to 8 ct | 8–22 ct | above 22 ct |
-| Major/minor thirds | Gentle | up to 12 ct | 12–30 ct | above 30 ct |
+| Major/minor thirds | Standard | up to 8 ct | 8–19 ct | above 19 ct |
 
 The boundaries are inclusive at the green and orange limits. That is why
 `-schisma` and equal temperament’s `-P/12`, which are both about 1.95 cents from
-a pure fifth, have the same green colour at Standard fifth sensitivity.
+a pure fifth, have the same green colour at both fifth sensitivities. A third
+21 cents sharp or flat is red even at Standard sensitivity.
 
 The circle uses the same colour limits as the lattice. Thick highlighted lines
 show the selected tone’s connected fifths and thirds. A chord is coloured by its
@@ -407,6 +454,13 @@ difference above 0.001 cents; amber indicates a smaller rounding difference.
 Hover for the signed difference. A red error can also indicate an invalid
 expression: read the status, check parentheses, use explicit multiplication,
 and remember that division by zero is rejected.
+
+**No sound.** First calculate or import a valid chart, enable playback, and
+select a chord. Check your system's default output and volume. If the status
+reports **Audio unavailable** or a disconnected output, hover over it for details,
+restore the device, then uncheck/recheck playback. The visual calculator works
+without an audio device. On Linux, ALSA must be able to reach your desktop's
+default sound output.
 
 **The chart disappeared after editing.**  Editing a formula makes the previous
 calculation stale, so the cent bars and harmony colours are removed until you

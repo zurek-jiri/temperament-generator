@@ -14,6 +14,7 @@ FILES = {
     "Independent-JPEG-Group-README.txt": "modules/juce_graphics/image_formats/jpglib/README",
     "libpng-LICENSE.txt": "modules/juce_graphics/image_formats/pnglib/LICENSE",
     "zlib-LICENSE.txt": "modules/juce_core/zip/zlib/LICENSE",
+    "FLAC-LICENSE.txt": "modules/juce_audio_formats/codecs/flac/Flac Licence.txt",
 }
 
 

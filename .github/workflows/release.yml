@@ -56,7 +56,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build pkg-config libfontconfig1-dev libfreetype-dev \
+          sudo apt-get install -y ninja-build pkg-config libasound2-dev libfontconfig1-dev libfreetype-dev \
             libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev \
             libxrandr-dev libxrender-dev libgl1-mesa-dev fonts-dejavu-core xvfb xauth
       - name: Build, test and check GUI rendering
