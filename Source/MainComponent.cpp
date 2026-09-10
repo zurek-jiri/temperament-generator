@@ -567,8 +567,10 @@ juce::String MainComponent::catalogueMatchDetails() const
             +"; maximum difference "+juce::String(match.maximumError,3)+" ct; RMS "+juce::String(match.rmsError,3)+" ct.\n"
             +"Harmonic distance "+juce::String(match.similarityError,3)+" ct; interval RMS: fifths "
             +juce::String(match.fifthRmsError,3)+", major thirds "+juce::String(match.majorThirdRmsError,3)
-            +", minor thirds "+juce::String(match.minorThirdRmsError,3)+" ct.\n"
-            +juce::String(known.comments)+"\n\n";
+            +", minor thirds "+juce::String(match.minorThirdRmsError,3)+" ct.\n";
+        const auto comment=juce::String(known.comments).trim();
+        if(comment.isNotEmpty()) details+="Note: "+comment+"\n";
+        details+="\n";
     }
     return details;
 }
@@ -684,6 +686,7 @@ bool MainComponent::renderPreviews(const juce::File& directory)
         return false;
     };
     directory.getChildFile("gui-check.txt").replaceWithText("GUI checks started.\n");
+    if(!harmony.isPlaybackSelected()||harmony.isAudioOutputOpen()) return failed(__LINE__);
     AboutPanel about;
     for(int i=0;i<3;++i) {about.showPage(i);if(!snapshot(about,"about-page-"+juce::String(i)+".png")) return failed(__LINE__);}
     // Laptop and desktop layouts must expose every control without shrinking
@@ -956,6 +959,8 @@ bool MainComponent::renderPreviews(const juce::File& directory)
     harmony.thirdsSensitivityControl().setSelectedId(2,juce::sendNotificationSync);
     csvInput.clear();csvInput.setColour(juce::TextEditor::outlineColourId,border);
     if(!save("fifths-equal.png")) return failed(__LINE__);
+    if(!harmony.isPlaybackSelected()||harmony.isAudioOutputOpen()) return failed(__LINE__);
+    if(!catalogueMatchDetails().contains("Note: ")) return failed(__LINE__);
     directory.getChildFile("gui-check.txt").replaceWithText("GUI checks passed: layouts, cent-deviation bars, preserved CSV input, import, shared tabs, rotation, Auto, catalogue matches and purity colours.\n");
     return true;
 }

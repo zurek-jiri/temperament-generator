@@ -1,35 +1,24 @@
-# Temperament Generator 1.6.0
+# Temperament Generator 1.6.1
 
-Hear the chords you see in Harmony lattice. This release adds a sampled Principal
-8 organ and adjustable church-style reverb, following your current temperament.
-Earlier releases, including 1.5.5 and 1.4.2, remain available in the release history.
+Chord playback is now enabled by default in Harmony lattice. Select a chord to
+hear it on the embedded Principal 8' organ, with 50% loudness and three-second
+reverb. Launching the app remains silent; the audio output opens on the first
+chord selection. Uncheck playback whenever you want silence.
 
-## What's new since 1.5.5
+## What's new since 1.6.0
 
-- Updated purity colours: fifths **Standard 4/9 ct**, **Strict 2/6 ct**;
-  thirds **Standard 8/19 ct**, **Strict 5/15 ct**. Gentle is removed from both
-  menus. Thirds 21 cents sharp or flat appear red in the lattice and circles.
-- Enable **Play Chords into Default Audio Output** at the lower right of Harmony
-  lattice. Select a chord, triangle, or root to hear a root-position triad for
-  two seconds, with a final 70 ms fade-out.
-- All 25 Principal 8 recordings are embedded as lossless 24-bit, 48 kHz FLAC.
-  Notes are repitched from their original A=440 equal temperament to the current
-  chart. No external sample folder or codec installation is needed.
-- **Loudness** adjusts the chord and reverb together from 0 to 100%, starting at
-  **50%**, with smooth changes during playback.
-- **Reverb** adjusts the approximate decay from 0 to 4 seconds, starting at
-  **3 seconds**. Its wet signal
-  is filtered below 200 Hz and above 2500 Hz; direct sound remains unfiltered.
-- Previous notes fade when changing chords quickly. Leaving the lattice or
-  changing/invalidating the chart stops the previous audition. The checkbox
-  starts off and only audio output is opened, never microphone input.
-- A scrollable chord list keeps the playback controls visible on small screens.
-- Updated illustrated manual, website screenshots, FLAC notices, and automated
-  pitch, fade, reverb-filtering, sample-decoding and native GUI checks.
+- Enable **Play Chords into Default Audio Output** by default. Playback still
+  lasts two seconds, including a final 70 ms fade-out, and uses output only.
+- Correct the stop name to **Principal 8'**, including its foot-length mark.
+- Refresh the embedded temperament catalogue with capitalized comment openings.
+  Suggested-match comments now begin with **Note:**.
+- Update the manual and website screenshots to reflect these refinements.
 
-Use your system settings for output destination and volume. If the default device
-changes, uncheck/recheck playback. The visual calculator remains usable without
-a sound device. The dry setting is useful for hearing interval beating clearly.
+This release retains the 1.6.0 purity settings: fifths Standard 4/9 ct and Strict
+2/6 ct; thirds Standard 8/19 ct and Strict 5/15 ct. Loudness and reverb remain
+adjustable. No sample folder or codec installation is needed.
+
+Earlier releases, including 1.6.0, remain available in the release history.
 
 ## Download and run
 
@@ -43,7 +32,7 @@ a sound device. The dry setting is useful for hearing interval beating clearly.
 
 No account or separate JUCE installation is needed to run the application.
 The Windows executable contains its C++ runtime. Linux uses system audio and GUI libraries;
-Ubuntu runtime setup and compilation instructions are in [BUILDING.md](https://github.com/zurek-jiri/temperament-generator/blob/v1.6.0/docs/BUILDING.md).
+Ubuntu runtime setup and compilation instructions are in [BUILDING.md](https://github.com/zurek-jiri/temperament-generator/blob/v1.6.1/docs/BUILDING.md).
 
 The Windows download is unsigned; the Mac applications use a local ad-hoc
 signature and are not Apple-notarised. If macOS blocks opening a trusted download,

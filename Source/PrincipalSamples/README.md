@@ -1,4 +1,4 @@
-# Principal 8 sample bank
+# Principal 8' sample bank
 
 25 mono recordings supplied by the project maintainer, MIDI 48–72, in equal
 temperament at A = 440 Hz. These assets are distributed as part of this project

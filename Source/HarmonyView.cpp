@@ -91,18 +91,13 @@ HarmonyView::HarmonyView()
     loudness.setTitle("Chord loudness");loudness.setTooltip("Output level for both the direct chord and reverb: 0% mutes, 100% is full level. Default 50%.");
     loudness.onValueChange=[this] {playback.setLoudness(loudness.getValue());};
     audioStatus.setFont(font(22));audioStatus.setColour(juce::Label::textColourId,muted);
-    audioStatus.setText("Principal 8 / playback off",juce::dontSendNotification);
+    playChords.setToggleState(true,juce::dontSendNotification);
+    audioStatus.setText("Principal 8' / 2 s chords",juce::dontSendNotification);
     playChords.onClick=[this] {
         if(!playChords.getToggleState())
-        {playback.disable();audioStatus.setText("Principal 8 / playback off",juce::dontSendNotification);return;}
-        const auto error=playback.enable();
-        if(error.isNotEmpty())
-        {
-            playChords.setToggleState(false,juce::dontSendNotification);
-            audioStatus.setText("Audio unavailable",juce::dontSendNotification);audioStatus.setTooltip(error);
-        }
-        else
-        {audioStatus.setText("Principal 8 / 2 s chords",juce::dontSendNotification);audioStatus.setTooltip({});audition();}
+        {playback.disable();audioStatus.setText("Principal 8' / playback off",juce::dontSendNotification);return;}
+        audioStatus.setText("Principal 8' / 2 s chords",juce::dontSendNotification);
+        audioStatus.setTooltip({});audition();
     };
     playback.onError=[this](const juce::String& error) {
         playChords.setToggleState(false,juce::dontSendNotification);
@@ -114,7 +109,17 @@ HarmonyView::HarmonyView()
 HarmonyView::~HarmonyView() {playback.onError={};playback.disable();chordViewport.setViewedComponent(nullptr,false);}
 void HarmonyView::audition()
 {
-    if(analysis.valid&&playChords.getToggleState()) playback.play(root,minor,tuning);
+    // Open the output on a real, visible chord selection, never during startup
+    // or offscreen preview rendering on machines without an audio device.
+    if(!analysis.valid||!playChords.getToggleState()||!isShowing()) return;
+    const auto error=playback.enable();
+    if(error.isNotEmpty())
+    {
+        playChords.setToggleState(false,juce::dontSendNotification);
+        audioStatus.setText("Audio unavailable",juce::dontSendNotification);audioStatus.setTooltip(error);
+        return;
+    }
+    playback.play(root,minor,tuning);
 }
 
 void HarmonyView::setChart(const std::array<double, 12>& cents, bool valid, const juce::String& source)

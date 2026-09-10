@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.1 — 2026-09-10
+
+- Enable chord playback by default, retaining 50% loudness and three-second reverb.
+  Open the default output on the first chord selection; startup stays silent.
+- Correct the organ stop label to Principal 8'.
+- Refresh the embedded catalogue with capitalized comment openings and introduce
+  each suggestion's comment with "Note:".
+- Update the manual and website screenshots; preserve silent offscreen checks.
+
 ## 1.6.0 — 2026-09-10
 
 - Set Standard purity limits to 4/9 ct for fifths and 8/19 ct for thirds;

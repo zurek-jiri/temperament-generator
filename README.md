@@ -1,4 +1,4 @@
-# Temperament Generator 1.6.0
+# Temperament Generator 1.6.1
 
 Desktop tools for designing twelve-note temperaments, converting comma corrections
 to tuning charts, and exploring fifths and thirds in a harmony lattice.
@@ -178,10 +178,10 @@ Background: [Tonnetz triads](https://archive.bridgesmathart.org/2006/bridges2006
 
 ## Hearing the chords
 
-On **Harmony lattice**, enable **Play Chords into Default Audio Output**.
-The selected triad plays immediately; selecting a chord, a lattice triangle or
-a root plays another two-second root-position triad, ending with a 70 ms fade-out.
-The 25 supplied Principal 8 samples (MIDI 48–72, A=440 equal temperament) are
+On **Harmony lattice**, **Play Chords into Default Audio Output** is enabled by
+default. Select a chord, a lattice triangle or a root to hear a two-second
+root-position triad, ending with a 70 ms fade-out. Uncheck playback for silence.
+The 25 supplied Principal 8' samples (MIDI 48–72, A=440 equal temperament) are
 embedded as lossless 24-bit FLAC and repitched by the current chart's cent values.
 No external samples, codecs, microphone or audio input are required.
 
@@ -191,8 +191,8 @@ or a longer church-like decay.
 The reverb's wet signal is filtered below 200 Hz and above 2500 Hz; the direct
 sound remains unfiltered. Reverb tails may continue after the chord ends.
 Rapid selections fade the old notes while starting the new chord. Changed or
-invalid charts and leaving the lattice stop the old audition. Playback starts
-off and opens only the default output when enabled; disable/re-enable to pick
+invalid charts and leaving the lattice stop the old audition. The default output
+opens on the first chord selection; disable/re-enable playback to pick
 up a changed system default device. Small windows scroll the chord-button list
 while retaining the audio controls at the lower right.
 

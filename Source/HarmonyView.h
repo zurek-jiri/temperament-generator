@@ -20,6 +20,8 @@ public:
     bool selectedMinor() const { return minor; }
     juce::ComboBox& sensitivityControl() { return sensitivity; }
     juce::ComboBox& thirdsSensitivityControl() { return thirdsSensitivity; }
+    bool isPlaybackSelected() const { return playChords.getToggleState(); }
+    bool isAudioOutputOpen() const { return playback.isEnabled(); }
     juce::String displayedNoteName(int note) const { return spellings[static_cast<size_t>(note)]; }
     temperament::HarmonyColourLimits colourLimits() const { return limits; }
     std::function<void()> onColoursChanged;

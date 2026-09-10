@@ -6,7 +6,7 @@ thirds combine in chords. It is intended for people who want to experiment with
 temperaments by ear and by eye: a formula tells you how a fifth was made, while
 the chart tells you where the notes ended up.
 
-The Harmony lattice can play Principal 8 chords in your current temperament,
+The Harmony lattice can play Principal 8' chords in your current temperament,
 with optional church-style reverb. The word “good” in the colour system means “close to the
 chosen pure ratio”; it is a useful visual guide, not a claim about every
 instrument, register, voicing, or listener.
@@ -301,7 +301,8 @@ reference pitch. All twelve rotations are searched.
 
 Each entry shows its rotation, maximum and RMS note differences from your
 A-relative chart, the overall harmonic distance, separate RMS differences for
-fifths and both thirds, and the catalogue comment. These interval differences
+fifths and both thirds, and the catalogue comment, introduced by **Note:**.
+These interval differences
 compare two temperaments; they are not purity errors or colour ratings.
 
 For example, import
@@ -341,16 +342,17 @@ tuned pitch class.
 
 ### Playing chords
 
-At the bottom right, enable **Play Chords into Default Audio Output**. The
-currently selected chord plays immediately. Then click a chord button or a
+At the bottom right, **Play Chords into Default Audio Output** starts checked.
+Click a chord button or a
 triangle in the lattice, select a note, or change the root/Major/Minor controls
-to hear another chord. Clicking the same chord button again repeats it.
+to hear a chord. Clicking the same chord button again repeats it. Uncheck playback
+to turn sound off; checking it again plays the currently selected chord.
 
 Each selection plays a root-position triad for **two seconds**, including a
 **70 ms fade-out** at the end. A short attack prevents clicks. When changing
 chords quickly, the previous notes fade out while the new chord begins.
 
-The instrument is the supplied **Principal 8** organ stop. Its 25 recordings
+The instrument is the supplied **Principal 8'** organ stop. Its 25 recordings
 cover MIDI notes 48–72 and were supplied in equal temperament at A = 440 Hz.
 The app repitches each note continuously by its current cent deviation: positive
 values sharpen it, negative values flatten it, and A retains its reference pitch.
@@ -377,7 +379,8 @@ giving a darker, church-like ambience. The direct sound keeps its original
 frequency content. Use dry playback when listening closely to beating; add
 reverb to hear how the chords blend in a room.
 
-The checkbox starts off. Audio goes to the operating system's default output;
+Playback is enabled by default, but launching the app is silent. The output opens
+when you first select a chord in the visible lattice. Audio goes to the operating system's default output;
 set its destination and volume in your system settings. If you change the default
 device while the app is running, uncheck and recheck playback to reopen it. The
 application never opens audio inputs, records sound, or asks for a microphone.

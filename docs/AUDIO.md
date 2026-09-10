@@ -2,13 +2,14 @@
 
 JUCE 8.0.12 supplies audio-device access and FLAC decoding. The renderer itself
 is ordinary C++17 and is tested without a device or GUI. Device inputs are always
-zero; default outputs are opened only when the user enables audition.
+zero. Playback starts selected, and the default output opens lazily on the first
+chord selection in the visible lattice. Startup and offscreen previews stay silent.
 
 ## Recordings and tuning
 
 `Source/PrincipalSamples/` holds 25 lossless 24-bit, 48 kHz mono recordings,
 provided in equal temperament at A=440. CMake embeds them using binary data.
-On first enable, they are decoded into immutable floating-point sample buffers.
+On first audition, they are decoded into immutable floating-point sample buffers.
 The original forward-loop metadata is preserved for large upward pitch shifts;
 normal two-second auditions use the recordings' beginnings.
 
@@ -55,7 +56,7 @@ the callback before destroying its state; errors are relayed to the UI asynchron
 
 The UI retains the enabled preference when changing tabs, but stops the old
 audition. Unchecking closes the device. Re-enabling asks for the current default
-output again. A device failure leaves the visual application usable.
+output again when auditioning a valid chart. A device failure leaves the visual application usable.
 
 ## Validation
 
