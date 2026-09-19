@@ -42,7 +42,7 @@ class DesktopIntegrationTests(unittest.TestCase):
         entry = launcher.read_text(encoding="utf-8")
         self.assertIn("StartupWMClass=Temperament Generator\n", entry)
         self.assertIn("Icon=" + installer.APP_ID + "\n", entry)
-        self.assertIn("Exec=" + installer.exec_argument(self.binary) + "\n", entry)
+        self.assertIn("Exec=/usr/bin/env -- " + installer.exec_argument(self.binary) + "\n", entry)
         icon = installer.locations(self.data)[1]
         self.assertEqual(icon.read_bytes(), b"test icon")
         moved = self.folder / "new version"

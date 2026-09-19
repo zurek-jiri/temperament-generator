@@ -51,8 +51,11 @@ def install(package, data_home):
     entry = "\n".join([
         "[Desktop Entry]", "Version=1.0", "Type=Application",
         "Name=Temperament Generator", "Comment=Design, compare and hear musical temperaments",
-        "Exec=" + exec_argument(binary), "Icon=" + APP_ID,
-        "Terminal=false", "Categories=AudioVideo;Audio;Education;",
+        # GIO checks the first executable before expanding %% in Exec. Using
+        # env keeps that check independent of percent signs in the install path.
+        "Exec=/usr/bin/env -- " + exec_argument(binary),
+        "TryExec=" + desktop_value(binary), "Icon=" + APP_ID,
+        "Terminal=false", "Categories=AudioVideo;Audio;",
         "Keywords=temperament;tuning;music;organ;", "StartupNotify=false",
         "StartupWMClass=Temperament Generator", MARKER, "",
     ])
