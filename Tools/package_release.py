@@ -13,6 +13,7 @@ import tarfile
 import shutil
 import subprocess
 import zipfile
+from desktop_assets import check_mac_icon, check_png
 
 
 def main():
@@ -55,6 +56,7 @@ def main():
         platform_name = "macos-" + ("arm64" if arch == "arm64" else "x64")
         binary = artefacts / "Temperament Generator.app"
         executable = binary / "Contents/MacOS/Temperament Generator"
+        check_mac_icon(binary)
         subprocess.run(["lipo", str(executable), "-verify_arch", arch], check=True)
         subprocess.run(["codesign", "--force", "--deep", "--sign", "-", str(binary)], check=True)
         subprocess.run(["codesign", "--verify", "--deep", "--strict", str(binary)], check=True)
@@ -102,6 +104,21 @@ def main():
         shutil.copytree(binary, staging / binary.name, symlinks=True)
     else:
         shutil.copy2(binary, staging / binary.name)
+    if sys.platform.startswith("linux"):
+        icon = staging / "temperament-generator.png"
+        subprocess.run(["xvfb-run", "-a", str(binary), "--export-icon", str(icon)], check=True, timeout=30)
+        check_png(icon)
+        shutil.copy2(root / "Packaging/Linux/install-desktop.py", staging / "install-desktop.py")
+        (staging / "DESKTOP-SETUP.txt").write_text(
+            "To add Temperament Generator and its tuning-fork icon to your application menu,\n"
+            "open a terminal in this extracted folder and run, without sudo:\n\n"
+            "    python3 install-desktop.py\n\n"
+            "Keep the extracted folder in place. Rerun the command after moving or upgrading it.\n"
+            "To remove the launcher and icon: python3 install-desktop.py --remove\n"
+            "The raw Linux executable may still show a generic file icon; launch from the menu.\n",
+            encoding="utf-8")
+    elif sys.platform == "darwin":
+        check_mac_icon(staging / binary.name)
     for path in paths:
         if path.parts[0] in {"Licenses", "docs"} or path.as_posix() in {"README.md", "LICENSE", "COPYRIGHT", "THIRD_PARTY_NOTICES.md", "CHANGELOG.md", "CONTRIBUTING.md"}:
             target = staging / path

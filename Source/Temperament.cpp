@@ -95,6 +95,16 @@ ReverseCalculation reverseCsv(const std::string& line, Mode mode, Reconstruction
         }
         start = end == std::string::npos ? line.size() : end + 1;
     }
+    return reverseChart(result.cents,mode,reconstruction);
+}
+
+ReverseCalculation reverseChart(const std::array<double,12>& cents, Mode mode, Reconstruction reconstruction)
+{
+    ReverseCalculation result;
+    result.cents=cents;
+    for(double value:cents)
+        if(!std::isfinite(value)||std::abs(value)>12000)
+        {result.error="Chart values must be finite cents between -12000 and 12000.";return result;}
     const double reference = result.cents[9];
     for (double& value : result.cents) value -= reference;
     result.cents[9] = 0;

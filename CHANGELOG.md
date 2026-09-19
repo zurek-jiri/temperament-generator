@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.0 — 2026-09-19
+
+- Replace Equal temperament with Load temperament: a searchable catalogue chooser
+  with notes and all 31 entries, including Equal. Load fills both circle layouts
+  with precise comma expressions, updates the chart and CSV out, and preserves CSV in.
+- Retain catalogue cent values for the chart and playback until the user calculates
+  the formulas; indicate when rounded expressions need circle closure.
+- Include the tuning-fork PNG icon and a per-user application-menu setup helper
+  in Linux packages. The launcher handles folders with spaces and matches the
+  running window for desktop/dock integration. No administrator access is needed.
+- Verify that Mac application bundles contain a valid icon resource referenced
+  by their Info.plist, before signing and packaging.
+- Add desktop-launcher and icon checks to native builds, and document
+  Linux launcher setup and opening the complete Mac application bundle.
+
 ## 1.6.1 — 2026-09-10
 
 - Enable chord playback by default, retaining 50% loudness and three-second reverb.

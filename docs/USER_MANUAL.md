@@ -11,6 +11,22 @@ with optional church-style reverb. The word “good” in the colour system mean
 chosen pure ratio”; it is a useful visual guide, not a claim about every
 instrument, register, voicing, or listener.
 
+## Opening the application with its icon
+
+On **macOS**, move the complete **Temperament Generator.app** to Applications
+and open it in Finder. The application bundle carries the tuning-fork icon;
+the executable inside the bundle can appear with a generic icon.
+
+On **Linux**, packages containing `install-desktop.py` can add the application
+and its icon to your menu. Keep the extracted folder in a permanent location,
+open a terminal there, and run `python3 install-desktop.py` without `sudo`.
+Then open **Temperament Generator** from your application menu. The raw executable
+may still show a generic icon in the file manager.
+
+After moving or upgrading the folder, run the helper again. To remove the menu
+entry and icon, run `python3 install-desktop.py --remove`. This keeps the application
+files. Older packages without the helper can still be started directly.
+
 ## The main window
 
 The two editing buttons select two views of the same temperament:
@@ -36,7 +52,7 @@ the right. The CSV fields remain below the result table.*
 *The formula-list layout: the chart sits between the circle and the long formula
 fields. This example is the quarter-comma meantone reconstruction.*
 
-At the top are the editing buttons, **Harmony lattice**, the two presets, and
+At the top are the editing buttons, **Harmony lattice**, **Load temperament**, **Pure fifths**, and
 **About / licenses**. The four buttons nearest the circle have a direct effect
 on the current formulas:
 
@@ -164,11 +180,35 @@ problem and leaves the input fields available for correction. Existing output is
 not presented as a new valid calculation. The **CSV in** field is never cleared
 or rewritten by this process; it remains the user’s reference text.
 
-### Equal temperament and pure fifths
+### Load a catalogue temperament
 
-**Equal temperament** fills the fifths with the equal-tempered correction,
-normally shown as `-P/12` in the formula list and `-1/12` in the compact view.
-It closes exactly.
+Click **Load temperament** in either editing layout. The chooser lists every
+built-in catalogue entry, with **Equal** first. Search by a name or words in its
+note, select a row, and read the **Note:** on the right. Click **Load selected**,
+double-click the row, or press Enter to load it. **Cancel** or Escape closes the
+chooser without changing your tuning.
+
+![Choosing a catalogue temperament](assets/catalogue-loader.png)
+
+Loading fills all twelve fifth fields with precise simple comma expressions and
+immediately updates the chart, interval colours, catalogue suggestions and
+**CSV out**. Both circle layouts share the loaded temperament. **CSV in stays
+exactly as you pasted it**, so you can compare it with the loaded result.
+The CSV reconstruction menu continues to control manual CSV imports; catalogue
+loading always uses precise expressions.
+
+The chart and playback retain the catalogue's A-normalised cent values. Some
+catalogue rows are rounded, so their reconstructed formulas may need **Close
+circle...** before **Calculate chart** can evaluate them as a closed tuning.
+Loading itself supplies valid CSV output immediately. The status line reports
+whether the formulas close; after you calculate, the chart follows your formulas.
+Use the rotation buttons to try another orientation of the loaded temperament.
+
+For equal temperament, choose **Load temperament → Equal → Load selected**.
+It fills every fifth with `-P/12` (or its equivalent in the other layout), closes
+exactly, and produces twelve zero cent deviations.
+
+### Pure fifths
 
 **Pure fifths** sets every correction to zero. This deliberately leaves an open
 circle, because twelve pure fifths do not return to the same seven-octave pitch.

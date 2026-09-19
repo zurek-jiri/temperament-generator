@@ -37,6 +37,18 @@ public:
     void initialise(const juce::String& commandLine) override
     {
         const auto args = juce::StringArray::fromTokens(commandLine, true);
+        if(args.size()==2&&args[0]=="--export-icon")
+        {
+            const auto file=juce::File(args[1].unquoted());
+            file.getParentDirectory().createDirectory();
+            bool success=false;
+            if(auto stream=file.createOutputStream())
+            {
+                stream->setPosition(0);stream->truncate();
+                success=juce::PNGImageFormat().writeImageToStream(appIcon(),*stream);
+            }
+            setApplicationReturnValue(success?0:1);quit();return;
+        }
         if(args.size()==2&&args[0]=="--check-default-audio")
         {
             const auto directory=juce::File(args[1].unquoted());directory.createDirectory();

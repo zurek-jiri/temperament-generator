@@ -100,7 +100,7 @@ private:
     juce::TextButton fifthsButton { "Inputs around circle" }, syntonicButton { "Formula list" };
     juce::TextButton harmonyButton { "Harmony lattice" };
     juce::TextButton aboutButton { "About / licenses" };
-    juce::TextButton equalButton { "Equal temperament" }, pureButton { "Pure intervals" };
+    juce::TextButton loadButton { "Load temperament" }, pureButton { "Pure intervals" };
     juce::TextButton closeButton { "Close circle..." }, calculateButton { "Calculate chart" };
     juce::TextButton rotateLeftButton { "Rotate CCW" }, rotateRightButton { "Rotate CW" };
     juce::TextButton knownDetailsButton { "Suggestions" };
@@ -122,6 +122,7 @@ private:
     bool dirty = false;
     bool statusError = false;
     bool importedChart = false;
+    juce::String referenceSource { "Imported CSV" };
     std::vector<std::unique_ptr<CircleEditor>>& activeCircles();
     void setMode(temperament::Mode);
     void showHarmony();
@@ -135,6 +136,9 @@ private:
     void markDirty();
     void calculate(bool closeCircles);
     void importCsv();
+    void applyReferenceChart(const temperament::ReverseCalculation&,const juce::String& source);
+    void showTemperamentCatalogue();
+    void loadTemperament(size_t index);
     void showClosingOptions();
     void setPreset(bool equal);
     void invalidate(const juce::String& message);

@@ -39,6 +39,28 @@ sudo apt install libfreetype6 libfontconfig1 libx11-6 libxcomposite1 libxcursor1
 The binary needs glibc 2.39 or later and an X11 display (or XWayland). It is not
 an AppImage; older distributions should compile from source instead.
 
+### Linux application-menu icon
+
+New packages include `temperament-generator.png` and `install-desktop.py`.
+Keep the extracted folder in a permanent location, then run this inside it as
+your normal desktop user (without `sudo`):
+
+```sh
+python3 install-desktop.py
+```
+
+This registers **Temperament Generator** in your application menu with the
+tuning-fork icon. Launch it from that menu and pin it to your dock if desired.
+The helper uses `$XDG_DATA_HOME` (normally `~/.local/share`), installs a desktop
+entry and a 512-pixel PNG in the hicolor icon theme, and associates the launcher
+with JUCE's window class. Python 3 is needed only for this optional setup.
+
+Rerun the helper from the new folder after an upgrade or move. To remove only
+the menu entry and icon, run `python3 install-desktop.py --remove`; the executable
+and your extracted files remain untouched. The raw ELF executable can still
+show a generic file icon: Linux desktop integration comes from the launcher.
+Older packages without the helper continue to run directly.
+
 Install a compiler, CMake, Git and the development packages used by JUCE's GUI:
 
 ```sh
@@ -91,6 +113,12 @@ For GUI smoke checks, run the executable inside the app bundle with
 applies an ad-hoc signature; these builds are not Apple-notarised. Source builds
 and downloads use system frameworks, with no separate JUCE runtime to install.
 
+In Finder, open or copy the complete **Temperament Generator.app** bundle to
+Applications. Its `Contents/Resources/Icon.icns` is referenced by `CFBundleIconFile`
+in `Info.plist`, so Finder and the Dock can use the tuning-fork icon. The inner
+Unix executable is a developer entry point and may display a generic icon.
+Packaging now rejects bundles with a missing or structurally invalid icon.
+
 ## Release automation
 
 The **Prepare desktop release** workflow builds Windows x64, Linux x64 and
@@ -102,6 +130,11 @@ including the JUCE checkout used by all four jobs.
 The final job downloads all five archives, verifies their SHA-256 hashes and
 uploads one `SHA256SUMS.txt`. The release stays a draft until reviewed and
 published. Ordinary **Build and test** checks also cover all four runners.
+
+Linux jobs also validate the installed desktop entry and launch a harmless test
+executable from a folder with spaces and special characters. Every platform
+exports and checks the 512-pixel icon from the application's embedded artwork;
+Mac jobs additionally check the bundle's icon reference and resource.
 
 ## Core-only build, without JUCE
 

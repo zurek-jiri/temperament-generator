@@ -295,5 +295,12 @@ int main()
             }
         }
     }
+    std::array<double,12> preciseChart {};
+    preciseChart[0]=0.123456789;preciseChart[9]=0.01;
+    const auto direct=reverseChart(preciseChart,Mode::syntonicFifths);
+    check(direct.valid&&std::abs(direct.cents[0]-0.113456789)<1e-12&&direct.cents[9]==0,
+          "Direct catalogue reconstruction preserves values beyond CSV display precision");
+    preciseChart[0]=std::numeric_limits<double>::quiet_NaN();
+    check(!reverseChart(preciseChart,Mode::syntonicFifths).valid,"Direct chart reconstruction rejects non-finite values");
     std::cout<<checks<<" reconstruction and closure checks passed\n";
 }

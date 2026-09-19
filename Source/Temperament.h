@@ -49,6 +49,8 @@ const std::array<SimpleFraction, 17>& simpleFractions();
 size_t nearestSimpleFraction(double value);
 ReverseCalculation reverseCsv(const std::string& line, Mode mode = Mode::pythagoreanFifths,
                               Reconstruction = Reconstruction::nearestFraction);
+ReverseCalculation reverseChart(const std::array<double,12>&, Mode,
+                                Reconstruction = Reconstruction::precise);
 
 struct CommaComponents { double p = 0, s = 0; };
 bool expressionComponents(const std::string&, Mode, CommaComponents&);

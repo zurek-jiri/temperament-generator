@@ -4,6 +4,7 @@
 
 #include "MainComponent.h"
 #include "ClosingPanel.h"
+#include "CataloguePanel.h"
 #include "AppIcon.h"
 #include "UiFonts.h"
 #include "AppLegal.h"
@@ -197,7 +198,7 @@ MainComponent::MainComponent()
 {
     setLookAndFeel(&lookAndFeel);
     setOpaque(true);
-    for (auto* button : { &fifthsButton, &syntonicButton, &harmonyButton, &aboutButton, &equalButton, &pureButton, &closeButton, &calculateButton, &rotateLeftButton, &rotateRightButton, &knownDetailsButton, &copyButton, &importButton })
+    for (auto* button : { &fifthsButton, &syntonicButton, &harmonyButton, &aboutButton, &loadButton, &pureButton, &closeButton, &calculateButton, &rotateLeftButton, &rotateRightButton, &knownDetailsButton, &copyButton, &importButton })
     {
         addAndMakeVisible(button);
         // Taking focus commits a fraction currently being typed into an editable ComboBox.
@@ -231,7 +232,7 @@ MainComponent::MainComponent()
         options.launchAsync();
     };
     addChildComponent(harmony);
-    equalButton.onClick = [this] { setPreset(true); };
+    loadButton.onClick = [this] { showTemperamentCatalogue(); };
     pureButton.onClick = [this] { setPreset(false); };
     closeButton.onClick = [this] { showClosingOptions(); };
     calculateButton.onClick = [this] { calculate(false); };
@@ -253,7 +254,7 @@ MainComponent::MainComponent()
         }
     };
     pureButton.setTooltip("Set every fifth to pure (0 comma). Use Close circle to choose how to distribute the required correction.");
-    equalButton.setTooltip("Reset all notes to twelve-tone equal temperament.");
+    loadButton.setTooltip("Choose a catalogue temperament, including Equal. Fill both circles with precise comma expressions and CSV out with its A-relative cent values. CSV in is preserved.");
     csvOutput.setReadOnly(true);
     csvOutput.setMultiLine(false);
     csvOutput.setFont(juce::Font(juce::FontOptions(ui::monoFont(), 24.0f, juce::Font::plain)));
@@ -324,7 +325,7 @@ void MainComponent::updateView()
     fifthsButton.setToggleState(!harmonyVisible && fifths, juce::dontSendNotification);
     syntonicButton.setToggleState(!harmonyVisible && !fifths, juce::dontSendNotification);
     harmonyButton.setToggleState(harmonyVisible, juce::dontSendNotification);
-    for (auto* button : { &equalButton, &pureButton, &closeButton, &calculateButton, &rotateLeftButton, &rotateRightButton, &knownDetailsButton, &copyButton, &importButton })
+    for (auto* button : { &loadButton, &pureButton, &closeButton, &calculateButton, &rotateLeftButton, &rotateRightButton, &knownDetailsButton, &copyButton, &importButton })
         button->setVisible(!harmonyVisible);
     csvInput.setVisible(!harmonyVisible); csvOutput.setVisible(!harmonyVisible);
     reconstruction.setVisible(!harmonyVisible);
@@ -336,7 +337,7 @@ void MainComponent::updateView()
 }
 void MainComponent::refreshHarmony()
 {
-    const auto source = (importedChart ? juce::String("Imported CSV") : juce::String("Calculated chart"))
+    const auto source = (importedChart ? referenceSource : juce::String("Calculated chart"))
         + " / " + (mode == temperament::Mode::pythagoreanFifths ? fifthsButton.getButtonText() : syntonicButton.getButtonText());
     harmony.setChart(result.cents, result.valid && !dirty, result.valid && !dirty ? source : "No current chart / return to a fifths tab to calculate");
     for(auto& group:circles) for(auto& ring:group) ring->setChart(result.cents,result.valid&&!dirty,harmony.colourLimits());
@@ -437,16 +438,7 @@ void MainComponent::importCsv()
         repaint();
         return;
     }
-    activeCircles().front()->setFromCsv(imported);
-    synchroniseOtherCircle();
-    result = {};
-    result.valid = true;
-    result.cents = imported.cents;
-    result.closureErrors = { imported.closureError };
-    importedChart = true;
-    dirty = false;
-    calculatedSignature = inputSignature();
-    csvOutput.setText(temperament::csv(result.cents), false);
+    applyReferenceChart(imported,"Imported CSV");
     csvInput.setColour(juce::TextEditor::outlineColourId, border);
     csvInput.setCaretPosition(0);
     copyButton.setEnabled(true);
@@ -457,6 +449,44 @@ void MainComponent::importCsv()
         +(closes?"Formulas close.":"Use Close circle to balance formulas.")+" Chart retains CSV values.";
     refreshHarmony();
     repaint();
+}
+void MainComponent::applyReferenceChart(const temperament::ReverseCalculation& imported,const juce::String& source)
+{
+    activeCircles().front()->setFromCsv(imported);
+    synchroniseOtherCircle();
+    result={};result.valid=true;result.cents=imported.cents;
+    result.closureErrors={imported.closureError};
+    importedChart=true;referenceSource=source;dirty=false;
+    calculatedSignature=inputSignature();
+    csvOutput.setText(temperament::csv(result.cents),false);
+    copyButton.setEnabled(true);
+}
+void MainComponent::showTemperamentCatalogue()
+{
+    const juce::Component::SafePointer<MainComponent> safe(this);
+    auto* chooser=new CataloguePanel([safe](size_t index) {if(safe!=nullptr) safe->loadTemperament(index);});
+    const auto* display=juce::Desktop::getInstance().getDisplays().getDisplayForRect(getScreenBounds());
+    const auto area=display!=nullptr?display->userArea:juce::Rectangle<int>(0,0,1280,800);
+    chooser->setSize(juce::jmin(1040,area.getWidth()-80),juce::jlimit(440,600,area.getHeight()-100));
+    juce::DialogWindow::LaunchOptions options;
+    options.content.setOwned(chooser);options.dialogTitle="Load temperament";
+    options.dialogBackgroundColour=background;options.escapeKeyTriggersCloseButton=true;
+    options.useNativeTitleBar=true;options.resizable=false;options.componentToCentreAround=this;
+    options.launchAsync();
+}
+void MainComponent::loadTemperament(size_t index)
+{
+    const auto& catalogue=temperament::knownTemperaments();
+    if(index>=catalogue.size()) return;
+    const auto& entry=catalogue[index];
+    const auto imported=temperament::reverseChart(entry.cents,mode,temperament::Reconstruction::precise);
+    if(!imported.valid) {status="Cannot load temperament: "+juce::String(imported.error);statusError=true;repaint();return;}
+    applyReferenceChart(imported,"Catalogue: "+juce::String(entry.name));
+    double maximum=0;for(double error:imported.intervalErrors) maximum=std::max(maximum,std::abs(error));
+    statusError=maximum>0.0010001;
+    status="Loaded "+juce::String(entry.name)+". CSV out retains catalogue values. "
+        +(std::abs(imported.closureError)<=0.000001?"Precise formulas close.":"Use Close circle to balance the reconstructed formulas.");
+    refreshHarmony();repaint();
 }
 void MainComponent::showClosingOptions()
 {
@@ -608,7 +638,7 @@ void MainComponent::resized()
     aboutButton.setBounds(w-202,52,186,36);
     fifthsButton.setBounds(16,52,236,36);syntonicButton.setBounds(260,52,258,36);
     harmonyButton.setBounds(526,52,192,36);
-    equalButton.setBounds(726,52,192,36);pureButton.setBounds(926,52,136,36);
+    loadButton.setBounds(726,52,192,36);pureButton.setBounds(926,52,136,36);
     harmony.setBounds(16,100,w-32,h-112);
     for(auto& group:circles) for(auto& circle:group) circle->setBounds(16,96,w-32,h-322);
     const auto& circle=*activeCircles().front();
@@ -687,6 +717,47 @@ bool MainComponent::renderPreviews(const juce::File& directory)
     };
     directory.getChildFile("gui-check.txt").replaceWithText("GUI checks started.\n");
     if(!harmony.isPlaybackSelected()||harmony.isAudioOutputOpen()) return failed(__LINE__);
+    const juce::String savedReference="Keep this pasted CSV unchanged";
+    csvInput.setText(savedReference,false);
+    for(auto selectedMode:{temperament::Mode::pythagoreanFifths,temperament::Mode::syntonicFifths})
+        for(size_t index=0;index<temperament::knownTemperaments().size();++index)
+        {
+            setMode(selectedMode);loadTemperament(index);
+            const auto& entry=temperament::knownTemperaments()[index];
+            if(!result.valid||dirty||!importedChart||csvInput.getText()!=savedReference
+                ||result.cents!=entry.cents||csvOutput.getText().toStdString()!=temperament::csv(entry.cents)
+                ||!copyButton.isEnabled()||!referenceSource.contains(juce::String(entry.name))) return failed(__LINE__);
+            const auto before=activeCircles().front()->expressions();
+            const auto otherMode=selectedMode==temperament::Mode::pythagoreanFifths?
+                temperament::Mode::syntonicFifths:temperament::Mode::pythagoreanFifths;
+            setMode(otherMode);
+            for(size_t i=0;i<12;++i)
+            {
+                double a=0,b=0;std::string error;
+                if(!temperament::evaluateExpression(before[i],selectedMode,a,error)
+                    ||!temperament::evaluateExpression(activeCircles().front()->expressions()[i],otherMode,b,error)
+                    ||std::abs(a*temperament::commaSize(selectedMode)-b*temperament::commaSize(otherMode))>1e-8) return failed(__LINE__);
+            }
+            if(result.cents!=entry.cents||csvInput.getText()!=savedReference||!harmony.chart().valid) return failed(__LINE__);
+        }
+    setMode(temperament::Mode::pythagoreanFifths);
+    CataloguePanel chooser([this](size_t index) {loadTemperament(index);});
+    const auto beforeChoice=csvOutput.getText();
+    chooser.setSearch("no such temperament 12345");chooser.loadSelected();
+    if(chooser.visibleEntries()!=0||chooser.selectedCatalogueIndex()!=-1||csvOutput.getText()!=beforeChoice) return failed(__LINE__);
+    chooser.setSearch("Meantone (-1/4)");
+    if(chooser.visibleEntries()!=1||chooser.selectedCatalogueIndex()<0||csvOutput.getText()!=beforeChoice) return failed(__LINE__);
+    chooser.setSearch("");
+    if(chooser.visibleEntries()!=static_cast<int>(temperament::knownTemperaments().size())) return failed(__LINE__);
+    if(!snapshot(chooser,"catalogue-loader.png")) return failed(__LINE__);
+    chooser.loadSelected();
+    if(!referenceSource.contains("Meantone")||csvInput.getText()!=savedReference) return failed(__LINE__);
+    if(!save("catalogue-loaded.png")) return failed(__LINE__);
+    const auto loaded=csvOutput.getText();loadTemperament(temperament::knownTemperaments().size());
+    if(csvOutput.getText()!=loaded) return failed(__LINE__);
+    loadTemperament(0);calculate(false);
+    if(!result.valid||csvOutput.getText().toStdString()!=temperament::csv({})||csvInput.getText()!=savedReference) return failed(__LINE__);
+    csvInput.clear();
     AboutPanel about;
     for(int i=0;i<3;++i) {about.showPage(i);if(!snapshot(about,"about-page-"+juce::String(i)+".png")) return failed(__LINE__);}
     // Laptop and desktop layouts must expose every control without shrinking

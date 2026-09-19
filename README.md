@@ -1,4 +1,4 @@
-# Temperament Generator 1.6.1
+# Temperament Generator 1.7.0
 
 Desktop tools for designing twelve-note temperaments, converting comma corrections
 to tuning charts, and exploring fifths and thirds in a harmony lattice.
@@ -66,9 +66,14 @@ leaves it pure. **Calculate chart** evaluates the formulas and any automatic fie
 A valid circle must have a total correction of **-P**. Invalid or edited inputs
 clear the old chart and interval colours until a new calculation succeeds.
 
-**Equal temperament** uses `-P/12` for every fifth (shown as `-1/12` in the compact
-layout). **Pure fifths** zeros all corrections and leaves a closure
-gap. Edits, presets and imports update both layouts together.
+**Load temperament** opens a searchable catalogue with notes for all 31 entries.
+Choose one and click **Load selected** to fill both circles with precise comma
+expressions and CSV out with its A-normalised catalogue values. CSV in is preserved.
+The chart and playback retain those values until you calculate the formulas;
+rounded catalogue entries may need **Close circle...** first.
+Choose **Equal** from this list for `-P/12` in every fifth and twelve zero deviations.
+**Pure fifths** zeros all corrections and leaves a closure gap. Edits, loads and
+imports update both layouts together.
 
 ## Interval colours on the circle
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(TemperamentGenerator VERSION 1.6.1 LANGUAGES C CXX)
+project(TemperamentGenerator VERSION 1.7.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -57,7 +57,7 @@ if(BUILD_GUI)
         ICON_BIG "Source/TuningFork.svg"
         ICON_SMALL "Source/TuningFork.svg"
         BUNDLE_ID "io.github.zurek-jiri.temperament-generator")
-    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/CentDeviationView.cpp Source/HarmonyView.cpp Source/ClosingPanel.cpp Source/ChordPlayback.cpp Source/AudioChecks.cpp)
+    target_sources(TemperamentGenerator PRIVATE Source/Main.cpp Source/MainComponent.cpp Source/CircleEditor.cpp Source/CentDeviationView.cpp Source/HarmonyView.cpp Source/ClosingPanel.cpp Source/CataloguePanel.cpp Source/ChordPlayback.cpp Source/AudioChecks.cpp)
     target_compile_definitions(TemperamentGenerator PRIVATE
         JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_USE_OGGVORBIS=0 JUCE_USE_MP3AUDIOFORMAT=0 JUCE_ASIO=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:TemperamentGenerator,JUCE_PRODUCT_NAME>"

@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from desktop_assets import check_mac_icon, check_png
 
 
 def main():
@@ -38,6 +39,7 @@ def main():
             configure += ["-DCMAKE_OSX_DEPLOYMENT_TARGET=13.0"]
     if args.juce_path:
         configure += ["-DJUCE_PATH=" + str(Path(args.juce_path).resolve())]
+    run([sys.executable, "Tests/DesktopIntegrationTests.py"])
     run(configure)
     run(["cmake", "--build", str(build), "--config", "Release", "--parallel", "2"])
     run(["ctest", "--test-dir", str(build), "-C", "Release", "--output-on-failure"])
@@ -49,6 +51,14 @@ def main():
     if sys.platform.startswith("linux"):
         command = ["xvfb-run", "-a"] + command
     run(command, timeout=90)
+    icon = preview / "app-icon.png"
+    command = [str(app), "--export-icon", str(icon)]
+    if sys.platform.startswith("linux"):
+        command = ["xvfb-run", "-a"] + command
+    run(command, timeout=30)
+    check_png(icon)
+    if sys.platform == "darwin":
+        check_mac_icon(app.parents[2])
 
 
 if __name__ == "__main__":
